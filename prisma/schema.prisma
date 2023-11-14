@@ -42,14 +42,14 @@ model Game {
 }
 
 model Fleet {
-  fleetId Int      @id // Unique ID for the fleet within the game snapshot
+  fleetId Int     @id // Unique ID for the fleet within the game snapshot
   gameId  String
   exp     Int? // Fleet experience level
   l       Int? // Looping, 1 = looped, 0 = not looped
   lx      String? // X coordinate for the fleet's location at the previous tick
   ly      String? // Y coordinate for the fleet's location at the previous tick
   n       String? // Name of the Carrier
-  o       Orders[] // List of orders
+  o       Json? // List of orders
   ouid    Int? // Unique ID for the carrier's current star
   puid    Int? // Player ID of the owner
   sp      Float? // Speed the fleet is moving at (in decimal)
@@ -151,11 +151,4 @@ model GameSnapshot {
   fleets  Json // Store fleets data as JSON or JSONB
   stars   Json // Store stars data as JSON or JSONB
   players Json // Store players data as JSON or JSONB
-}
-
-model Orders {
-  id           Int    @id @default(autoincrement())
-  order        Int[]
-  Fleet        Fleet? @relation(fields: [fleetFleetId], references: [fleetId])
-  fleetFleetId Int?
 }
