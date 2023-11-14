@@ -1,6 +1,7 @@
 import { pushObjectToDatabase } from "@/utils/prismaUtil";
 
-// eslint-disable-next-line import/no-anonymous-default-export
+const GAME_NUMBER = "6420290023981056";
+
 export async function GET() {
   try {
     // Fetch the game object from the API
@@ -16,10 +17,10 @@ export async function GET() {
     }
 
     const gameData = await response.json();
+    console.log(gameData);
 
     // Push the game object data to the database using your function
-    // await pushObjectToDatabase(gameData);
-    console.log("yippee");
+    await pushObjectToDatabase(gameData, GAME_NUMBER);
 
     return new Response("Game object successfully pushed to the database", {
       status: 200,

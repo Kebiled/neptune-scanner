@@ -11,8 +11,7 @@ datasource db {
 }
 
 model Game {
-  id                Int      @id @default(autoincrement())
-  gameNumber        Int
+  gameNumber        String   @id
   name              String
   paused            Boolean?
   productions       Int?
@@ -43,9 +42,8 @@ model Game {
 }
 
 model Fleet {
-  id      Int      @id @default(autoincrement())
-  gameId  Int
-  fleetId Int // Unique ID for the fleet within the game snapshot
+  fleetId Int      @id // Unique ID for the fleet within the game snapshot
+  gameId  String
   exp     Int? // Fleet experience level
   l       Int? // Looping, 1 = looped, 0 = not looped
   lx      String? // X coordinate for the fleet's location at the previous tick
@@ -61,13 +59,12 @@ model Fleet {
   x       String? // X coordinate for the fleet's current location
   y       String? // Y coordinate for the fleet's current location
 
-  game Game @relation(fields: [gameId], references: [id])
+  game Game @relation(fields: [gameId], references: [gameNumber])
 }
 
 model Star {
-  id     Int     @id @default(autoincrement())
-  gameId Int
-  starId Int // Unique ID for the star within the game snapshot
+  starId Int     @id // Unique ID for the star within the game snapshot
+  gameId String
   c      Float? // Where ships/tick is not a whole number, the amount currently produced
   e      Int? // Current level of economy
   exp    Int? // Unclear (possibly experience)
@@ -80,16 +77,15 @@ model Star {
   s      Int? // Current level of science
   st     Int? // Number of ships on the star
   uid    Int? // Unique ID for the star (matches to the key in the parent object)
-  v      Int? // Flag for if the star is visible. 0 = no, 1 = yes
+  v      String? // Flag for if the star is visible. 0 = no, 1 = yes
   x      String? // X coordinate of the star
   y      String? // Y coordinate of the star
-  game   Game    @relation(fields: [gameId], references: [id])
+  game   Game    @relation(fields: [gameId], references: [gameNumber])
 }
 
 model Player {
-  id              Int     @id @default(autoincrement())
-  gameId          Int
-  playerId        Int // Unique ID for the player within the game snapshot
+  playerId        Int     @id // Unique ID for the player within the game snapshot
+  gameId          String
   ai              Int? // If the player is currently AI. 0 = no, 1 = yes
   alias           String? // The Player's alias / display name (not true alias)
   avatar          Int? // Unique ID for the player avatar
@@ -119,15 +115,16 @@ model Player {
   totalStrength   Int? // Total ships the player has
   uid             Int? // Unique ID for the player (matches to the key in the parent object)
   war             Json? // Object containing the war status for every other player
-  game            Game    @relation(fields: [gameId], references: [id])
+  game            Game    @relation(fields: [gameId], references: [gameNumber])
 }
 
 model GameSnapshot {
-  id        Int      @id @default(autoincrement())
-  gameId    Int
-  tick      Int
-  createdAt DateTime @default(now())
-  game      Game     @relation(fields: [gameId], references: [id])
+  gameNumberTick String   @id
+  gameNumber     String
+  name           String
+  tick           Int
+  createdAt      DateTime @default(now())
+  game           Game     @relation(fields: [gameNumber], references: [gameNumber])
 
   // Other fields to store the entire game state
   paused            Boolean?
@@ -151,8 +148,7 @@ model GameSnapshot {
   turnBasedTimeOut  Int?
 
   // JSON or JSONB field to store nested objects
-  scanningData Json // You can use Json or JsonB type to store the entire scanning_data object
-  fleets       Json // Store fleets data as JSON or JSONB
-  stars        Json // Store stars data as JSON or JSONB
-  players      Json // Store players data as JSON or JSONB
+  fleets  Json // Store fleets data as JSON or JSONB
+  stars   Json // Store stars data as JSON or JSONB
+  players Json // Store players data as JSON or JSONB
 }

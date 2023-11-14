@@ -4,133 +4,138 @@ const { PrismaClient } = require("@prisma/client");
 // TODO: Type all objects and add to type file in ./utils
 
 // Function to push the new object to the database
-export async function pushObjectToDatabase(gameObject: any) {
+export async function pushObjectToDatabase(
+  gameObject: any,
+  gameNumber: string
+) {
   // Initialize Prisma client
   const prisma = new PrismaClient();
 
-  try {
-    // Extract relevant data from the new object
-    const {
+  // Extract relevant data from the new object
+  const {
+    name,
+    paused,
+    productions,
+    tick_fragment,
+    now,
+    tick_rate,
+    productionRate,
+    stars_for_victory,
+    game_over,
+    started,
+    start_time,
+    total_stars,
+    production_counter,
+    trade_scanned,
+    tick,
+    trade_cost,
+    admin,
+    player_uid,
+    turn_based,
+    war,
+    turn_based_time_out,
+    fleets,
+    stars,
+    players,
+  } = gameObject.scanning_data;
+
+  // Create or update the game record
+  const game = await prisma.game.upsert({
+    where: { name, gameNumber }, // Assuming 'name' is a unique identifier for the game
+    create: {
       name,
+      gameNumber,
       paused,
       productions,
-      tickFragment,
+      tickFragment: tick_fragment,
       now,
-      tickRate,
+      tickRate: tick_rate,
       productionRate,
-      starsForVictory,
-      gameOver,
+      starsForVictory: stars_for_victory,
+      gameOver: game_over,
       started,
-      startTime,
-      totalStars,
-      productionCounter,
-      tradeScanned,
+      startTime: start_time,
+      totalStars: total_stars,
+      productionCounter: production_counter,
+      tradeScanned: trade_scanned,
       tick,
-      tradeCost,
+      tradeCost: trade_cost,
       admin,
-      playerUid,
-      turnBased,
+      playerUid: player_uid,
+      turnBased: turn_based,
       war,
-      turnBasedTimeOut,
-      fleets,
-      stars,
-      players,
-    } = gameObject;
+      turnBasedTimeOut: turn_based_time_out,
+    },
+    update: {
+      paused,
+      productions,
+      tickFragment: tick_fragment,
+      now,
+      tickRate: tick_rate,
+      productionRate,
+      starsForVictory: stars_for_victory,
+      gameOver: game_over,
+      started,
+      startTime: start_time,
+      totalStars: total_stars,
+      productionCounter: production_counter,
+      tradeScanned: trade_scanned,
+      tick,
+      tradeCost: trade_cost,
+      admin,
+      playerUid: player_uid,
+      turnBased: turn_based,
+      war,
+      turnBasedTimeOut: turn_based_time_out,
+    },
+  });
 
-    // Create or update the game record
-    const game = await prisma.game.upsert({
-      where: { name }, // Assuming 'name' is a unique identifier for the game
-      create: {
-        name,
-        paused,
-        productions,
-        tickFragment,
-        now,
-        tickRate,
-        productionRate,
-        starsForVictory,
-        gameOver,
-        started,
-        startTime,
-        totalStars,
-        productionCounter,
-        tradeScanned,
-        tick,
-        tradeCost,
-        admin,
-        playerUid,
-        turnBased,
-        war,
-        turnBasedTimeOut,
-      },
-      update: {
-        paused,
-        productions,
-        tickFragment,
-        now,
-        tickRate,
-        productionRate,
-        starsForVictory,
-        gameOver,
-        started,
-        startTime,
-        totalStars,
-        productionCounter,
-        tradeScanned,
-        tick,
-        tradeCost,
-        admin,
-        playerUid,
-        turnBased,
-        war,
-        turnBasedTimeOut,
-      },
-    });
+  // Check for existing snapshot on this tick
+  const snapshot = await prisma.gameSnapshot.findMany({
+    where: {
+      gameNumberTick: `${gameNumber}+${tick}`,
+    },
+  });
 
-    // Create a new GameSnapshot record
+  // Create a new GameSnapshot record if none found
+  if (snapshot.length === 0) {
     await prisma.gameSnapshot.create({
       data: {
-        gameId: game.id,
+        gameNumberTick: `${gameNumber}+${tick}`,
+        gameNumber,
         tick,
         name,
         paused,
         productions,
-        tickFragment,
+        tickFragment: tick_fragment,
         now,
-        tickRate,
+        tickRate: tick_rate,
         productionRate,
-        starsForVictory,
-        gameOver,
+        starsForVictory: stars_for_victory,
+        gameOver: game_over,
         started,
-        startTime,
-        totalStars,
-        productionCounter,
-        tradeScanned,
-        tradeCost,
+        startTime: start_time,
+        totalStars: total_stars,
+        productionCounter: production_counter,
+        tradeScanned: trade_scanned,
+        tradeCost: trade_cost,
         admin,
-        playerUid,
-        turnBased,
+        playerUid: player_uid,
+        turnBased: turn_based,
         war,
-        turnBasedTimeOut,
+        turnBasedTimeOut: turn_based_time_out,
         fleets,
         stars,
         players,
       },
     });
-
-    await createOrUpdateFleetRecords(game, fleets, prisma);
-
-    await createOrUpdateStarRecords(game, stars, prisma);
-
-    await createOrUpdatePlayerRecords(game, players, prisma);
-
-    console.log("Object successfully pushed to the database.");
-  } catch (error) {
-    console.error("Error pushing object to the database:", error);
-  } finally {
-    // Close the Prisma client connection
-    await prisma.$disconnect();
   }
+
+  await createOrUpdateFleetRecords(game, fleets, prisma);
+  await createOrUpdateStarRecords(game, stars, prisma);
+  await createOrUpdatePlayerRecords(game, players, prisma);
+
+  await prisma.$disconnect();
 }
 
 async function createOrUpdateFleetRecords(
@@ -142,10 +147,11 @@ async function createOrUpdateFleetRecords(
     const fleetData = fleets[fleetId];
     await prisma.fleet.upsert({
       where: {
-        gameId_fleetId: { gameId: game.id, fleetId: parseInt(fleetId) },
+        gameId: game.gameNumber,
+        fleetId: parseInt(fleetId),
       },
       create: {
-        gameId: game.id,
+        gameId: game.gameNumber,
         fleetId: parseInt(fleetId),
         exp: fleetData.exp,
         l: fleetData.l,
@@ -190,9 +196,12 @@ async function createOrUpdateStarRecords(
   for (const starId in stars) {
     const starData = stars[starId];
     await prisma.star.upsert({
-      where: { gameId_starId: { gameId: game.id, starId: parseInt(starId) } },
+      where: {
+        gameId: game.gameNumber,
+        starId: parseInt(starId),
+      },
       create: {
-        gameId: game.id,
+        gameId: game.gameNumber,
         starId: parseInt(starId),
         c: starData.c,
         e: starData.e,
@@ -240,10 +249,11 @@ async function createOrUpdatePlayerRecords(
     const playerData = players[playerId];
     await prisma.player.upsert({
       where: {
-        gameId_playerId: { gameId: game.id, playerId: parseInt(playerId) },
+        gameId: game.gameNumber,
+        playerId: parseInt(playerId),
       },
       create: {
-        gameId: game.id,
+        gameId: game.gameNumber,
         playerId: parseInt(playerId),
         ai: playerData.ai,
         alias: playerData.alias,
