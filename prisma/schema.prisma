@@ -1,0 +1,158 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model Game {
+  id                Int      @id @default(autoincrement())
+  gameNumber        Int
+  name              String
+  paused            Boolean?
+  productions       Int?
+  tickFragment      Float?
+  now               BigInt?
+  tickRate          Int?
+  productionRate    Int?
+  starsForVictory   Int?
+  gameOver          Int?
+  started           Boolean?
+  startTime         BigInt?
+  totalStars        Int?
+  productionCounter Int?
+  tradeScanned      Int?
+  tick              Int?
+  tradeCost         Int?
+  admin             Int?
+  playerUid         Int?
+  turnBased         Int?
+  war               Int?
+  turnBasedTimeOut  Int?
+
+  // Relationships
+  fleets       Fleet[]
+  stars        Star[]
+  players      Player[]
+  GameSnapshot GameSnapshot[]
+}
+
+model Fleet {
+  id      Int      @id @default(autoincrement())
+  gameId  Int
+  fleetId Int // Unique ID for the fleet within the game snapshot
+  exp     Int? // Fleet experience level
+  l       Int? // Looping, 1 = looped, 0 = not looped
+  lx      String? // X coordinate for the fleet's location at the previous tick
+  ly      String? // Y coordinate for the fleet's location at the previous tick
+  n       String? // Name of the Carrier
+  o       String[] // List of orders (you can use JSON array)
+  ouid    Int? // Unique ID for the carrier's current star
+  puid    Int? // Player ID of the owner
+  sp      Float? // Speed the fleet is moving at (in decimal)
+  st      Int? // Number of ships (strength)
+  uid     Int? // Unique ID for the carrier (matches the object ID)
+  w       Int? // Flag for whether the fleet is traveling at warp. 0 = no, 1 = yes
+  x       String? // X coordinate for the fleet's current location
+  y       String? // Y coordinate for the fleet's current location
+
+  game Game @relation(fields: [gameId], references: [id])
+}
+
+model Star {
+  id     Int     @id @default(autoincrement())
+  gameId Int
+  starId Int // Unique ID for the star within the game snapshot
+  c      Float? // Where ships/tick is not a whole number, the amount currently produced
+  e      Int? // Current level of economy
+  exp    Int? // Unclear (possibly experience)
+  ga     Int? // The presence of a warpgate. 0 = no gate, 1 = gate
+  i      Int? // Current level of industry
+  n      String? // The current name of the star
+  nr     Int? // Natural resources of the star
+  puid   Int? // Player ID of the player who owns the star
+  r      Int? // Resource level of the star (including terraforming bonus)
+  s      Int? // Current level of science
+  st     Int? // Number of ships on the star
+  uid    Int? // Unique ID for the star (matches to the key in the parent object)
+  v      Int? // Flag for if the star is visible. 0 = no, 1 = yes
+  x      String? // X coordinate of the star
+  y      String? // Y coordinate of the star
+  game   Game    @relation(fields: [gameId], references: [id])
+}
+
+model Player {
+  id              Int     @id @default(autoincrement())
+  gameId          Int
+  playerId        Int // Unique ID for the player within the game snapshot
+  ai              Int? // If the player is currently AI. 0 = no, 1 = yes
+  alias           String? // The Player's alias / display name (not true alias)
+  avatar          Int? // Unique ID for the player avatar
+  cash            Int? // Current funds available to the player
+  color           Int? // Current player color (can change)
+  conceded        Int? // If the player has exited the game. 0 = no, 1 = conceded, 2 = inactive, 3 = total wipe out
+  countdownToWar  Json? // An object containing all player IDs and the number of ticks until war starts
+  fleetPrice      Int? // Cost to purchase the next carrier
+  huid            Int? // Unique ID for the player's home star
+  karmaToGive     Int? // The amount of renown the player has not yet given in the game
+  ledger          Json? // Dictionary of player ID (string) to ledger balance (int)
+  missedTurns     Int? // Number of turns the player has missed
+  race            Json? // 2-element list representing technology strength/weakness
+  ready           Int? // If the player's current turn is ready
+  regard          Int? // The AI's opinion of the player
+  researching     String? // The technology currently being researched
+  researchingNext String? // The technology being researched next
+  starsAbandoned  Int? // Number of stars abandoned this production round
+  ses             Int? // Unknown
+  shape           Int? // Current player shape (can change)
+  tech            Json? // Object containing player's technology information
+  totalEconomy    Int? // Total economy the player has
+  totalFleets     Int? // Total number of carriers the player has
+  totalIndustry   Int? // Total industry the player has
+  totalScience    Int? // Total science the player has
+  totalStars      Int? // Total stars the player has
+  totalStrength   Int? // Total ships the player has
+  uid             Int? // Unique ID for the player (matches to the key in the parent object)
+  war             Json? // Object containing the war status for every other player
+  game            Game    @relation(fields: [gameId], references: [id])
+}
+
+model GameSnapshot {
+  id        Int      @id @default(autoincrement())
+  gameId    Int
+  tick      Int
+  createdAt DateTime @default(now())
+  game      Game     @relation(fields: [gameId], references: [id])
+
+  // Other fields to store the entire game state
+  paused            Boolean?
+  productions       Int?
+  tickFragment      Float?
+  now               BigInt?
+  tickRate          Int?
+  productionRate    Int?
+  starsForVictory   Int?
+  gameOver          Int?
+  started           Boolean?
+  startTime         BigInt?
+  totalStars        Int?
+  productionCounter Int?
+  tradeScanned      Int?
+  tradeCost         Int?
+  admin             Int?
+  playerUid         Int?
+  turnBased         Int?
+  war               Int?
+  turnBasedTimeOut  Int?
+
+  // JSON or JSONB field to store nested objects
+  scanningData Json // You can use Json or JsonB type to store the entire scanning_data object
+  fleets       Json // Store fleets data as JSON or JSONB
+  stars        Json // Store stars data as JSON or JSONB
+  players      Json // Store players data as JSON or JSONB
+}
