@@ -10,7 +10,6 @@ export async function GET() {
       {
         method: "POST",
         cache: "no-store",
-        next: { revalidate: 3600 },
       }
     );
 

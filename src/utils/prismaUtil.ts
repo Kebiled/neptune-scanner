@@ -48,10 +48,10 @@ export async function pushObjectToDatabase(
     },
   })) as Game;
 
-  if (currentGameState.tick === gameObject.scanning_data.tick) {
-    await prisma.$disconnect();
-    throw new Error("API data already in DB - Same tick value");
-  }
+  // if (currentGameState.tick === gameObject.scanning_data.tick) {
+  //   await prisma.$disconnect();
+  //   throw new Error("API data already in DB - Same tick value");
+  // }
 
   // Create or update the game record
   const game = await prisma.game.upsert({

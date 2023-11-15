@@ -6,7 +6,7 @@ import { cache } from "react";
 
 export const revalidate = 60;
 
-export async function getGameState(gameNumber: string) {
+async function getGameState(gameNumber: string) {
   const gameState = cache(async (gameNumber: string) => {
     const item = await getCurrentGameState(gameNumber);
     return item;
