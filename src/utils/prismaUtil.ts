@@ -407,7 +407,7 @@ export async function getPlayerFleets(playerId: number, gameNumber: string) {
         return processDBOrder(order);
       }
     });
-    return { ...fleet, o: processedOrders.filter((order) => order !== null) };
+    return { ...fleet, o: processedOrders };
   });
 
   await prisma.$disconnect();

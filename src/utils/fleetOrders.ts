@@ -2,11 +2,16 @@ import { getTimeToArrivalForFleet } from "./coordinates";
 import { getStar } from "./prismaUtil";
 import { Coord, DBFleetOrder, Fleet, FleetOrder, OrderType } from "./types";
 
+// TODO: fix the root DB type
 export function processDBOrder(fleetOrder: DBFleetOrder) {
   return {
+    // @ts-ignore
     delayInTicks: fleetOrder[0],
+    // @ts-ignore
     starId: fleetOrder[1],
+    // @ts-ignore
     orderType: OrderType[fleetOrder[2]],
+    // @ts-ignore
     numberOfShips: fleetOrder[3],
   } as FleetOrder;
 }
