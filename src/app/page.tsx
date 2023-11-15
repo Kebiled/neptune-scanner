@@ -6,7 +6,7 @@ import Text from "@/elements/Text/Text";
 import { PLAYER_COLORS } from "@/utils/colors";
 import { getFleetData } from "@/utils/fleetOrders";
 import { getCurrentGameState, getPlayerFleets } from "@/utils/prismaUtil";
-import { BUILDING_TYPE, Fleet } from "@/utils/types";
+import { BUILDING_TYPE, Fleet, FleetOrder } from "@/utils/types";
 import { cache } from "react";
 
 export const revalidate = 1800;
@@ -46,10 +46,12 @@ async function getFleetArrivalData(
 export default async function Home() {
   if (!process.env.GAME_NUMBER) throw new Error("No game number in env");
   const gameState = await getGameState(process.env.GAME_NUMBER);
-  const playerFleets = await getFleets(
-    gameState.playerUid ?? -1,
-    process.env.GAME_NUMBER
-  );
+  const playerFleets = (
+    await getFleets(gameState.playerUid ?? -1, process.env.GAME_NUMBER)
+  ).map((fleet) => ({
+    ...fleet,
+    o: fleet.o ? fleet.o.filter((o): o is FleetOrder => o !== undefined) : [],
+  }));
   const fleetArrivalData = await getFleetArrivalData(
     playerFleets,
     Number(gameState.now)
