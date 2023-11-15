@@ -171,7 +171,7 @@ async function upsertFleet(
   fleetId: string,
   prisma: typeof PrismaClient
 ) {
-  await prisma.fleet.upsert({
+  return prisma.fleet.upsert({
     where: {
       gameId: game.gameNumber,
       fleetId: parseInt(fleetId),
@@ -235,7 +235,7 @@ async function upsertVisibleStar(
   starId: string,
   prisma: typeof PrismaClient
 ) {
-  prisma.star.upsert({
+  return prisma.star.upsert({
     where: {
       gameId: game.gameNumber,
       starId: parseInt(starId),
@@ -279,7 +279,7 @@ async function upsertHiddenStar(
   starId: string,
   prisma: typeof PrismaClient
 ) {
-  prisma.star.upsert({
+  return prisma.star.upsert({
     where: {
       gameId: game.gameNumber,
       starId: parseInt(starId),
@@ -309,10 +309,12 @@ async function createOrUpdatePlayerRecords(
   players: any,
   prisma: typeof PrismaClient
 ) {
+  const upserts = [];
   for (const playerId in players) {
     const playerData = players[playerId];
-    await upsertPlayer(game, playerData, playerId, prisma);
+    upserts.push(upsertPlayer(game, playerData, playerId, prisma));
   }
+  await Promise.all(upserts);
 }
 
 async function upsertPlayer(
@@ -321,7 +323,7 @@ async function upsertPlayer(
   playerId: string,
   prisma: typeof PrismaClient
 ) {
-  await prisma.player.upsert({
+  return prisma.player.upsert({
     where: {
       gameId: game.gameNumber,
       playerId: parseInt(playerId),
