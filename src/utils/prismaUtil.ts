@@ -407,7 +407,6 @@ export async function getPlayerFleets(playerId: number, gameNumber: string) {
         return processDBOrder(order);
       }
     });
-    console.log(processedOrders);
     return { ...fleet, o: processedOrders.filter((order) => order !== null) };
   });
 
