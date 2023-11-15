@@ -141,7 +141,7 @@ type TechLevels = {
   manufacturing: { level: number; value: number };
 };
 
-export type DBFleetOrder = number[];
+export type DBFleetOrder = object;
 
 export type FleetOrder = {
   delayInTicks: number;

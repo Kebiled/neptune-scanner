@@ -46,10 +46,10 @@ export async function pushObjectToDatabase(
     },
   })) as Game;
 
-  if (currentGameState.tick === gameObject.scanning_data.tick) {
-    await prisma.$disconnect();
-    throw new Error("API data already in DB - Same tick value");
-  }
+  // if (currentGameState.tick === gameObject.scanning_data.tick) {
+  //   await prisma.$disconnect();
+  //   throw new Error("API data already in DB - Same tick value");
+  // }
 
   // Create or update the game record
   const game = await prisma.game.upsert({
@@ -395,15 +395,20 @@ export async function getPlayerFleets(playerId: number, gameNumber: string) {
   });
 
   const processedFleets = fleets.map((fleet) => {
-    const processedOrders: FleetOrder[] = [];
     const orders = fleet.o;
     if (!orders || orders.length === 0) {
       return { ...fleet, o: null };
     }
-    for (const order in orders) {
-      processedOrders.push(processDBOrder(JSON.parse(order)));
-    }
-    return { ...fleet, o: [...processedOrders] };
+    const processedOrders = orders.map((order) => {
+      if (order === null || typeof order !== "object") {
+        return [];
+      }
+      if (Object.prototype.toString.call(order) === "[object Array]") {
+        return processDBOrder(order);
+      }
+    });
+    console.log(processedOrders);
+    return { ...fleet, o: processedOrders.filter((order) => order !== null) };
   });
 
   await prisma.$disconnect();
