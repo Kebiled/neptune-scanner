@@ -1,7 +1,8 @@
-import { Fleet, Game, Player, Star } from "./types";
+import prisma from "../../lib/prisma";
+import { processDBOrder } from "./fleetOrders";
+import { Fleet, FleetOrder, Game, Player, Star } from "./types";
 
 // TODO: Type Game Object
-const { PrismaClient } = require("@prisma/client");
 
 // TODO: Type all objects and add to type file in ./utils
 // TODO: Cache the get functions here
@@ -11,9 +12,6 @@ export async function pushObjectToDatabase(
   gameObject: any,
   gameNumber: string
 ) {
-  // Initialize Prisma client
-  const prisma = new PrismaClient();
-
   // Extract relevant data from the new object
   const {
     name,
@@ -145,32 +143,23 @@ export async function pushObjectToDatabase(
     });
   }
 
-  await createOrUpdateFleetRecords(game, fleets, prisma);
-  await createOrUpdateStarRecords(game, stars, prisma);
-  await createOrUpdatePlayerRecords(game, players, prisma);
+  await createOrUpdateFleetRecords(game, fleets);
+  await createOrUpdateStarRecords(game, stars);
+  await createOrUpdatePlayerRecords(game, players);
 
   await prisma.$disconnect();
 }
 
-async function createOrUpdateFleetRecords(
-  game: any,
-  fleets: any,
-  prisma: typeof PrismaClient
-) {
+async function createOrUpdateFleetRecords(game: any, fleets: any) {
   const upserts = [];
   for (const fleetId in fleets) {
     const fleetData = fleets[fleetId];
-    upserts.push(upsertFleet(game, fleetData, fleetId, prisma));
+    upserts.push(upsertFleet(game, fleetData, fleetId));
   }
   await Promise.all(upserts);
 }
 
-async function upsertFleet(
-  game: any,
-  fleetData: any,
-  fleetId: string,
-  prisma: typeof PrismaClient
-) {
+async function upsertFleet(game: any, fleetData: any, fleetId: string) {
   return prisma.fleet.upsert({
     where: {
       gameId: game.gameNumber,
@@ -212,29 +201,20 @@ async function upsertFleet(
   });
 }
 
-async function createOrUpdateStarRecords(
-  game: any,
-  stars: any,
-  prisma: typeof PrismaClient
-) {
+async function createOrUpdateStarRecords(game: any, stars: any) {
   const upserts = [];
   for (const starId in stars) {
     const starData = stars[starId];
     if (starData.visible) {
-      upserts.push(upsertVisibleStar(game, starData, starId, prisma));
+      upserts.push(upsertVisibleStar(game, starData, starId));
     } else {
-      upserts.push(upsertHiddenStar(game, starData, starId, prisma));
+      upserts.push(upsertHiddenStar(game, starData, starId));
     }
   }
   await Promise.all(upserts);
 }
 
-async function upsertVisibleStar(
-  game: any,
-  starData: any,
-  starId: string,
-  prisma: typeof PrismaClient
-) {
+async function upsertVisibleStar(game: any, starData: any, starId: string) {
   return prisma.star.upsert({
     where: {
       gameId: game.gameNumber,
@@ -273,12 +253,7 @@ async function upsertVisibleStar(
   });
 }
 
-async function upsertHiddenStar(
-  game: any,
-  starData: any,
-  starId: string,
-  prisma: typeof PrismaClient
-) {
+async function upsertHiddenStar(game: any, starData: any, starId: string) {
   return prisma.star.upsert({
     where: {
       gameId: game.gameNumber,
@@ -304,25 +279,16 @@ async function upsertHiddenStar(
   });
 }
 
-async function createOrUpdatePlayerRecords(
-  game: any,
-  players: any,
-  prisma: typeof PrismaClient
-) {
+async function createOrUpdatePlayerRecords(game: any, players: any) {
   const upserts = [];
   for (const playerId in players) {
     const playerData = players[playerId];
-    upserts.push(upsertPlayer(game, playerData, playerId, prisma));
+    upserts.push(upsertPlayer(game, playerData, playerId));
   }
   await Promise.all(upserts);
 }
 
-async function upsertPlayer(
-  game: any,
-  playerData: any,
-  playerId: string,
-  prisma: typeof PrismaClient
-) {
+async function upsertPlayer(game: any, playerData: any, playerId: string) {
   return prisma.player.upsert({
     where: {
       gameId: game.gameNumber,
@@ -391,7 +357,6 @@ async function upsertPlayer(
 }
 
 export async function getCurrentGameState(gameNumber: string) {
-  const prisma = new PrismaClient();
   const gameState = (await prisma.game.findUnique({
     where: {
       gameNumber,
@@ -409,7 +374,6 @@ export async function getCurrentGameState(gameNumber: string) {
 }
 
 export async function getStar(starId: number) {
-  const prisma = new PrismaClient();
   const gameNumber = process.env.GAME_NUMBER;
   const star = (await prisma.star.findUnique({
     where: {
@@ -423,14 +387,25 @@ export async function getStar(starId: number) {
 }
 
 export async function getPlayerFleets(playerId: number, gameNumber: string) {
-  const prisma = new PrismaClient();
-  const fleets = (await prisma.fleet.findMany({
+  const fleets = await prisma.fleet.findMany({
     where: {
       gameId: gameNumber,
       puid: playerId,
     },
-  })) as Fleet[];
+  });
+
+  const processedFleets = fleets.map((fleet) => {
+    const processedOrders: FleetOrder[] = [];
+    const orders = fleet.o;
+    if (!orders || orders.length === 0) {
+      return { ...fleet, o: null };
+    }
+    for (const order in orders) {
+      processedOrders.push(processDBOrder(JSON.parse(order)));
+    }
+    return { ...fleet, o: [...processedOrders] };
+  });
 
   await prisma.$disconnect();
-  return fleets;
+  return processedFleets;
 }

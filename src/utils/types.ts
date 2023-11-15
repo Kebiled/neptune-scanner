@@ -59,8 +59,7 @@ export type GameSnapshot = {
 };
 
 export type Player = {
-  id: number;
-  gameId: number;
+  gameId: string;
   playerId: number;
   ai?: number | null;
   alias?: string | null;
@@ -68,7 +67,7 @@ export type Player = {
   cash?: number | null;
   color?: number | null;
   conceded?: number | null;
-  countdownToWar?: Record<string, number> | null;
+  countdownToWar?: Record<string, number> | null | undefined;
   fleetPrice?: number | null;
   huid?: number | null;
   karmaToGive?: number | null;
@@ -94,8 +93,7 @@ export type Player = {
 };
 
 export type Star = {
-  id: number;
-  gameId: number;
+  gameId: string;
   starId: number;
   c?: number | null;
   e?: number | null;
@@ -115,15 +113,14 @@ export type Star = {
 };
 
 export type Fleet = {
-  id: number;
-  gameId: number;
+  gameId: string;
   fleetId: number;
   exp?: number | null;
   l?: number | null;
   lx?: string | null;
   ly?: string | null;
   n?: string | null;
-  o?: DBFleetOrder[] | null;
+  o?: FleetOrder[] | null;
   ouid?: number | null;
   puid?: number | null;
   sp?: number | null;

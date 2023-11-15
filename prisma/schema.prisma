@@ -49,7 +49,7 @@ model Fleet {
   lx      String? // X coordinate for the fleet's location at the previous tick
   ly      String? // Y coordinate for the fleet's location at the previous tick
   n       String? // Name of the Carrier
-  o       Json? // List of orders
+  o       Json[] // List of orders
   ouid    Int? // Unique ID for the carrier's current star
   puid    Int? // Player ID of the owner
   sp      Float? // Speed the fleet is moving at (in decimal)

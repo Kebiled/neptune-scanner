@@ -12,13 +12,11 @@ export function processDBOrder(fleetOrder: DBFleetOrder) {
 }
 
 async function getOrderArrivalTime(
-  dBFleetOrder: DBFleetOrder,
+  fleetOrder: FleetOrder,
   gameStateTime: number,
   fleetCoordinates: Coord,
   inWarp: number
 ) {
-  const fleetOrder = processDBOrder(dBFleetOrder);
-
   // get star coord
   const star = await getStar(fleetOrder.starId);
   if (!star.x || !star.y) {
@@ -38,7 +36,7 @@ async function getOrderArrivalTime(
 async function getFleetArrivalTime(fleet: Fleet, gameStateTime: number) {
   if (!fleet.o || !(fleet.w === 1 || fleet.w === 0) || fleet.o?.length === 0)
     return null;
-  const firstOrder: DBFleetOrder = fleet.o[0];
+  const firstOrder = fleet.o[0];
   const fleetCoordinates: Coord = { x: Number(fleet.x), y: Number(fleet.y) };
   const inWarp = fleet.w;
 
@@ -55,7 +53,7 @@ export async function getFleetData(fleets: Fleet[], gameStateTime: number) {
   const fleetsOrderData = await Promise.all(
     fleets.map(async (fleet: Fleet) => {
       if (!fleet.o || fleet.o.length === 0) return null;
-      const fleetOrder = processDBOrder(fleet.o[0]);
+      const fleetOrder = fleet.o[0];
       const star = await getStar(fleetOrder.starId);
       const name = star.n;
       const ownedBy = star.puid;
