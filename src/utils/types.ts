@@ -82,7 +82,7 @@ export type Player = {
   starsAbandoned?: number | null;
   ses?: number | null;
   shape?: number | null;
-  tech?: Record<string, unknown> | null;
+  tech?: TechLevels | null;
   totalEconomy?: number | null;
   totalFleets?: number | null;
   totalIndustry?: number | null;
@@ -132,4 +132,25 @@ export type Fleet = {
   w?: number | null;
   x?: string | null;
   y?: string | null;
+};
+
+type TechLevels = {
+  banking: { level: number; value: number };
+  weapons: { level: number; value: number };
+  research: { level: number; value: number };
+  scanning: { level: number; value: number };
+  propulsion: { level: number; value: number };
+  terraforming: { level: number; value: number };
+  manufacturing: { level: number; value: number };
+};
+
+export enum BUILDING_TYPE {
+  ECONOMY = "Economy",
+  INDUSTRY = "Industry",
+  SCIENCE = "Science",
+}
+
+export type Coord = {
+  x: number;
+  y: number;
 };
