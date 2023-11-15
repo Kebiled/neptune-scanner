@@ -9,6 +9,8 @@ export async function GET() {
       `https://np.ironhelmet.com/api?game_number=6420290023981056&code=gazRh6&api_version=0.1`,
       {
         method: "POST",
+        cache: "no-store",
+        next: { revalidate: 3600 },
       }
     );
 
