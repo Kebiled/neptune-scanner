@@ -309,12 +309,10 @@ async function createOrUpdatePlayerRecords(
   players: any,
   prisma: typeof PrismaClient
 ) {
-  const upserts = [];
   for (const playerId in players) {
     const playerData = players[playerId];
-    upserts.push(upsertPlayer(game, playerData, playerId, prisma));
+    await upsertPlayer(game, playerData, playerId, prisma);
   }
-  await Promise.all(upserts);
 }
 
 async function upsertPlayer(
@@ -323,7 +321,7 @@ async function upsertPlayer(
   playerId: string,
   prisma: typeof PrismaClient
 ) {
-  prisma.player.upsert({
+  await prisma.player.upsert({
     where: {
       gameId: game.gameNumber,
       playerId: parseInt(playerId),

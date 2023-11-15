@@ -63,7 +63,8 @@ export async function getFleetData(fleets: Fleet[], gameStateTime: number) {
       return {
         starName: name,
         ownedBy: ownedBy,
-        timeToArrival: timeToArrival,
+        // TODO: fix names
+        arrivalDate: timeToArrival,
       };
     })
   );

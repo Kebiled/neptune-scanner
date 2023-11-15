@@ -78,7 +78,10 @@ export default async function Home() {
           />
         </Box>
         <Box className="flex justify-between mt-6">
-          <FleetArrivalCard />
+          <FleetArrivalCard
+            fleetsData={fleetArrivalData}
+            players={gameState.players}
+          />
         </Box>
       </Box>
     </main>
