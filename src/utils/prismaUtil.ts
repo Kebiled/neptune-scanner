@@ -1,3 +1,5 @@
+import { Game, Player } from "./types";
+
 // TODO: Type Game Object
 const { PrismaClient } = require("@prisma/client");
 
@@ -38,6 +40,18 @@ export async function pushObjectToDatabase(
     stars,
     players,
   } = gameObject.scanning_data;
+
+  console.log(gameObject);
+  const currentGameState = (await prisma.game.findUnique({
+    where: {
+      gameNumber,
+    },
+  })) as Game;
+
+  if (currentGameState.tick === gameObject.scanning_data.tick) {
+    await prisma.$disconnect();
+    throw new Error("API data already in DB - Same tick value");
+  }
 
   // Create or update the game record
   const game = await prisma.game.upsert({
@@ -318,4 +332,22 @@ async function createOrUpdatePlayerRecords(
       },
     });
   }
+}
+
+export async function getCurrentGameState(gameNumber: string) {
+  const prisma = new PrismaClient();
+  const gameState = (await prisma.game.findUnique({
+    where: {
+      gameNumber,
+    },
+  })) as Game;
+
+  const players = (await prisma.player.findMany({
+    where: {
+      gameId: gameNumber,
+    },
+  })) as Player[];
+
+  await prisma.$disconnect();
+  return { ...gameState, players };
 }
