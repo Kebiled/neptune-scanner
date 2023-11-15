@@ -4,6 +4,7 @@ import { Fleet, Game, Player, Star } from "./types";
 const { PrismaClient } = require("@prisma/client");
 
 // TODO: Type all objects and add to type file in ./utils
+// TODO: Cache the get functions here
 
 // Function to push the new object to the database
 export async function pushObjectToDatabase(
@@ -41,20 +42,17 @@ export async function pushObjectToDatabase(
     players,
   } = gameObject.scanning_data;
 
-  console.log("START - Fetching current Game", Date.now());
   const currentGameState = (await prisma.game.findUnique({
     where: {
       gameNumber,
     },
   })) as Game;
-  console.log("END - Fetching current Game", Date.now());
 
-  // if (currentGameState.tick === gameObject.scanning_data.tick) {
-  //   await prisma.$disconnect();
-  //   throw new Error("API data already in DB - Same tick value");
-  // }
+  if (currentGameState.tick === gameObject.scanning_data.tick) {
+    await prisma.$disconnect();
+    throw new Error("API data already in DB - Same tick value");
+  }
 
-  console.log("START - upsert new game data", Date.now());
   // Create or update the game record
   const game = await prisma.game.upsert({
     where: { name, gameNumber }, // Assuming 'name' is a unique identifier for the game
@@ -105,18 +103,14 @@ export async function pushObjectToDatabase(
       turnBasedTimeOut: turn_based_time_out,
     },
   });
-  console.log("END - upsert new game data", Date.now());
 
-  console.log("START - check existing snapshot", Date.now());
   // Check for existing snapshot on this tick
   const snapshot = await prisma.gameSnapshot.findMany({
     where: {
       gameNumberTick: `${gameNumber}+${tick}`,
     },
   });
-  console.log("END - check existing snapshot", Date.now());
 
-  console.log("START - create new snapshot", Date.now());
   // Create a new GameSnapshot record if none found
   if (snapshot.length === 0) {
     await prisma.gameSnapshot.create({
@@ -150,17 +144,10 @@ export async function pushObjectToDatabase(
       },
     });
   }
-  console.log("END - create new snapshot", Date.now());
 
-  console.log("START - upsert fleet", Date.now());
   await createOrUpdateFleetRecords(game, fleets, prisma);
-  console.log("END - upsert fleet", Date.now());
-  console.log("START - upsert stars", Date.now());
   await createOrUpdateStarRecords(game, stars, prisma);
-  console.log("END - upsert stars", Date.now());
-  console.log("START - upsert players", Date.now());
   await createOrUpdatePlayerRecords(game, players, prisma);
-  console.log("END - upsert players", Date.now());
 
   await prisma.$disconnect();
 }
@@ -417,32 +404,33 @@ export async function getCurrentGameState(gameNumber: string) {
     },
   })) as Player[];
 
-  const fleets = (await prisma.fleet.findMany({
-    where: {
-      gameId: gameNumber,
-    },
-  })) as Fleet[];
-
-  // const stars = (await prisma.star.findMany({
-  //   where: {
-  //     gameId: gameNumber,
-  //   },
-  // })) as Star[];
-
   await prisma.$disconnect();
-  return { ...gameState, players, fleets };
+  return { ...gameState, players };
 }
 
-export async function getStar(starId: string, gameNumber: string) {
+export async function getStar(starId: number) {
   const prisma = new PrismaClient();
-
+  const gameNumber = process.env.GAME_NUMBER;
   const star = (await prisma.star.findUnique({
     where: {
       gameId: gameNumber,
       starId,
     },
-  })) as Star[];
+  })) as Star;
 
   await prisma.$disconnect();
   return star;
+}
+
+export async function getPlayerFleets(playerId: number, gameNumber: string) {
+  const prisma = new PrismaClient();
+  const fleets = (await prisma.fleet.findMany({
+    where: {
+      gameId: gameNumber,
+      puid: playerId,
+    },
+  })) as Fleet[];
+
+  await prisma.$disconnect();
+  return fleets;
 }

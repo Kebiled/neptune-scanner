@@ -5,16 +5,23 @@ import { Player } from "@/utils/types";
 
 type LeaderboardCardProps = {
   gameName: string;
+  gameTick: number;
   players: Player[];
 };
 
 export default function LeaderboardCard({
   gameName,
+  gameTick,
   players,
 }: LeaderboardCardProps) {
   return (
     <Box className="w-[800px] min-h-[200px] bg-slate-200 rounded-md px-3 pt-3">
-      <Text className="text-black font-bold text-lg">{gameName}</Text>
+      <Box className="flex justify-between">
+        <Text className="text-black font-bold text-lg">{gameName}</Text>
+        <Text className="text-black font-bold text-lg">
+          Tick: {`${gameTick}`}
+        </Text>
+      </Box>
       <Box className="flex flex-col mt-10 mb-5">
         {players
           .sort((a, b) => (b.totalStars || 0) - (a.totalStars || 0))

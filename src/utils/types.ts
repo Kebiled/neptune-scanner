@@ -123,7 +123,7 @@ export type Fleet = {
   lx?: string | null;
   ly?: string | null;
   n?: string | null;
-  o?: string[] | null;
+  o?: DBFleetOrder[] | null;
   ouid?: number | null;
   puid?: number | null;
   sp?: number | null;
@@ -143,6 +143,26 @@ type TechLevels = {
   terraforming: { level: number; value: number };
   manufacturing: { level: number; value: number };
 };
+
+export type DBFleetOrder = number[];
+
+export type FleetOrder = {
+  delayInTicks: number;
+  starId: number;
+  orderType: keyof OrderType;
+  numberOfShips: number;
+};
+
+export enum OrderType {
+  DoNothing = 0,
+  CollectAll = 1,
+  DropAll = 2,
+  Collect = 3,
+  Drop = 4,
+  CollectAllBut = 5,
+  DropAllBut = 6,
+  GarrisonStar = 7,
+}
 
 export enum BUILDING_TYPE {
   ECONOMY = "Economy",
