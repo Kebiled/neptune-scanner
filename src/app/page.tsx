@@ -13,7 +13,7 @@ import { cache } from "react";
 // TODO: React suspense and loading states
 // TODO: Use tables for table data
 
-export const revalidate = 1800;
+export const revalidate = 300;
 
 async function getGameState(gameNumber: string) {
   const gameState = cache(async (gameNumber: string) => {
