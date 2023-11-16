@@ -3,8 +3,6 @@ import CycleGainCard from "@/components/CycleGainCard/CycleGainCard";
 import FleetArrivalCard from "@/components/FleetArrivalCard/FleetArrivalCard";
 import LeaderboardCard from "@/components/LeaderboardCard/LeaderboardCard";
 import Box from "@/elements/Box/Box";
-import Text from "@/elements/Text/Text";
-import { PLAYER_COLORS } from "@/utils/colors";
 import { getFleetData } from "@/utils/fleetOrders";
 import { getCurrentGameState, getPlayerFleets } from "@/utils/prismaUtil";
 import { playerTickComparison } from "@/utils/tickComparison";

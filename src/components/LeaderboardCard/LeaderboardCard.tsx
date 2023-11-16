@@ -51,6 +51,9 @@ export default function LeaderboardCard({
                     Stars: {`${player.totalStars}`}
                   </Text>
                   <Text className="text-white ml-3">
+                    Fleets: {`${player.totalFleets}`}
+                  </Text>
+                  <Text className="text-white ml-3">
                     Ships: {`${player.totalStrength}`}
                   </Text>
                 </Box>
