@@ -131,7 +131,7 @@ export type Fleet = {
   y?: string | null;
 };
 
-type TechLevels = {
+export type TechLevels = {
   banking: { level: number; value: number };
   weapons: { level: number; value: number };
   research: { level: number; value: number };

@@ -45,14 +45,20 @@ export default function LeaderboardCard({
                 } px-3`}
                 key={player.playerId}
               >
-                <Text className={`text-white`}>{player.alias}</Text>
-                <Box className="flex">
+                <Box className="w-3/6">
+                  <Text className={`text-white`}>{player.alias}</Text>
+                </Box>
+                <Box className="w-1/6">
                   <Text className="text-white ml-3">
                     Stars: {`${player.totalStars}`}
                   </Text>
+                </Box>
+                <Box className="w-1/6">
                   <Text className="text-white ml-3">
                     Fleets: {`${player.totalFleets}`}
                   </Text>
+                </Box>
+                <Box className="w-1/6">
                   <Text className="text-white ml-3">
                     Ships: {`${player.totalStrength}`}
                   </Text>

@@ -20,7 +20,7 @@ export default function CycleGainCard({ cycleComparison }: CycleGainCardProps) {
       <Text className="text-black font-bold text-lg">
         Gained Over Last Cycle
       </Text>
-      <Box className="flex flex-row w-full justify-between mt-10">
+      <Box className="flex flex-row w-full justify-between mt-10 mb-5">
         <Box className="mr-20">
           <CycleGainCol key={"title"} />
         </Box>

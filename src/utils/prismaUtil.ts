@@ -1,6 +1,6 @@
 import prisma from "../../lib/prisma";
 import { processDBOrder } from "./fleetOrders";
-import { Fleet, FleetOrder, Game, Player, Star } from "./types";
+import { Fleet, FleetOrder, Game, Player, Star, TechLevels } from "./types";
 
 // TODO: Type Game Object and process data before storing in DB
 // TODO: Rewrite DB types and model
@@ -369,6 +369,15 @@ export async function getCurrentGameState(gameNumber: string) {
       gameId: gameNumber,
     },
   })) as Player[];
+
+  const parsedPlayers = players.map((player) => {
+    const tech = player.tech ? JSON.stringify(player.tech) : null;
+    if (tech) {
+      const parsedTech: TechLevels = JSON.parse(tech);
+      return { ...player, tech: { ...parsedTech } };
+    }
+    return player;
+  });
 
   await prisma.$disconnect();
   return { ...gameState, players };

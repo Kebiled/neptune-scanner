@@ -61,11 +61,15 @@ export async function getFleetData(fleets: Fleet[], gameStateTime: number) {
       const fleetOrder = fleet.o[0];
       const star = await getStar(fleetOrder.starId);
       const name = star.n;
+      const starStrength = star.st;
+      const fleetStrength = fleet.st;
       const ownedBy = star.puid;
       const timeToArrival = await getFleetArrivalTime(fleet, gameStateTime);
       return {
         starName: name,
         ownedBy: ownedBy,
+        starStrength: starStrength,
+        fleetStrength: fleetStrength,
         // TODO: fix names
         arrivalDate: timeToArrival,
       };

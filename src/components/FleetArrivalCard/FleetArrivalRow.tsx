@@ -10,6 +10,8 @@ type FleetArrivalRowProps = {
   fleetData: {
     starName: string | null | undefined;
     ownedBy: number | null | undefined;
+    starStrength: number | null | undefined;
+    fleetStrength: number | null | undefined;
     arrivalDate: Date | null | undefined;
   } | null;
   arrivalDate: Date;
@@ -50,11 +52,11 @@ export default function FleetArrivalRow({
 
   return (
     <Box className="flex flex-row justify-between">
-      <Box className="w-1/4">
+      <Box className="w-1/5">
         <Text className="text-black">{fleetData?.starName}</Text>
       </Box>
       {fleetData?.ownedBy ? (
-        <Box className="flex w-1/4">
+        <Box className="flex w-1/5">
           <Box
             className={`my-auto mr-2 rounded-full w-4 h-4 bg-${
               PLAYER_COLORS[fleetData?.ownedBy]
@@ -68,7 +70,19 @@ export default function FleetArrivalRow({
           </Text>
         </Box>
       ) : null}
-      <Box className="w-1/4">
+      <Box className="w-1/6">
+        <Text className="text-black">{`${
+          fleetData?.fleetStrength === null
+            ? "Hidden"
+            : fleetData?.fleetStrength
+        }`}</Text>
+      </Box>
+      <Box className="w-1/6">
+        <Text className="text-black">{`${
+          fleetData?.starStrength === null ? "Hidden" : fleetData?.starStrength
+        }`}</Text>
+      </Box>
+      <Box className="w-1/5">
         <Text className="text-black">{timeLeft}</Text>
       </Box>
     </Box>
