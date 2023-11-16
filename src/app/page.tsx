@@ -1,4 +1,5 @@
 import BuildingTableCard from "@/components/BuildingTableCard/BuildingTableCard";
+import CycleGainCard from "@/components/CycleGainCard/CycleGainCard";
 import FleetArrivalCard from "@/components/FleetArrivalCard/FleetArrivalCard";
 import LeaderboardCard from "@/components/LeaderboardCard/LeaderboardCard";
 import Box from "@/elements/Box/Box";
@@ -6,8 +7,11 @@ import Text from "@/elements/Text/Text";
 import { PLAYER_COLORS } from "@/utils/colors";
 import { getFleetData } from "@/utils/fleetOrders";
 import { getCurrentGameState, getPlayerFleets } from "@/utils/prismaUtil";
+import { playerTickComparison } from "@/utils/tickComparison";
 import { BUILDING_TYPE, Fleet, FleetOrder } from "@/utils/types";
 import { cache } from "react";
+
+// TODO: React suspense and loading states
 
 export const revalidate = 1800;
 
@@ -27,6 +31,19 @@ async function getFleets(playerId: number, gameNumber: string) {
   });
 
   return playerFleets(playerId, gameNumber);
+}
+
+async function getLastCycleComparison(currentTick: number) {
+  const currentCycle = Math.floor(currentTick / 24);
+  if (currentCycle === 0) return null;
+  const endTick = currentCycle * 24;
+  const startTick = endTick - 24;
+  const cycleComparison = cache(async (startTick: number, endTick: number) => {
+    const item = await playerTickComparison(startTick, endTick);
+    return item;
+  });
+
+  return cycleComparison(startTick, endTick);
 }
 
 async function getFleetArrivalData(
@@ -56,12 +73,14 @@ export default async function Home() {
     playerFleets,
     Number(gameState.now)
   );
+  const cycleComparions = await getLastCycleComparison(gameState.tick ?? 0);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-slate-400">
       <Box className="flex flex-col">
         <LeaderboardCard
           gameName={gameState.name}
+          gameState={gameState}
           gameTick={gameState.tick ?? -1}
           players={gameState.players}
         />
@@ -84,6 +103,9 @@ export default async function Home() {
             fleetsData={fleetArrivalData}
             players={gameState.players}
           />
+        </Box>
+        <Box className="flex mt-6">
+          <CycleGainCard cycleComparison={cycleComparions ?? []} />
         </Box>
       </Box>
     </main>

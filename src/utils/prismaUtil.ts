@@ -2,7 +2,8 @@ import prisma from "../../lib/prisma";
 import { processDBOrder } from "./fleetOrders";
 import { Fleet, FleetOrder, Game, Player, Star } from "./types";
 
-// TODO: Type Game Object
+// TODO: Type Game Object and process data before storing in DB
+// TODO: Rewrite DB types and model
 
 // TODO: Type all objects and add to type file in ./utils
 // TODO: Cache the get functions here
@@ -384,6 +385,25 @@ export async function getStar(starId: number) {
 
   await prisma.$disconnect();
   return star;
+}
+
+export async function getSnapshot(tick: number) {
+  const gameNumber = process.env.GAME_NUMBER;
+  const gameSnapshot = await prisma.gameSnapshot.findUnique({
+    where: {
+      gameNumberTick: `${gameNumber}+${tick}`,
+    },
+  });
+  const players = gameSnapshot?.players
+    ? JSON.stringify(gameSnapshot.players)
+    : null;
+  if (players) {
+    const parsedPlayers = JSON.parse(players);
+    return { ...gameSnapshot, players: { ...parsedPlayers } };
+  }
+
+  await prisma.$disconnect();
+  return gameSnapshot;
 }
 
 export async function getPlayerFleets(playerId: number, gameNumber: string) {
