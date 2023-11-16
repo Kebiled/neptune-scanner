@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/poll.ts": {
+    "api/poll": {
       "maxDuration": 300
     }
   },
