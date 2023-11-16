@@ -2,6 +2,7 @@ import BuildingTableCard from "@/components/BuildingTableCard/BuildingTableCard"
 import CycleGainCard from "@/components/CycleGainCard/CycleGainCard";
 import FleetArrivalCard from "@/components/FleetArrivalCard/FleetArrivalCard";
 import LeaderboardCard from "@/components/LeaderboardCard/LeaderboardCard";
+import TechnologyLevelCard from "@/components/TechnologyLevelCard/TechnologyLevelCard";
 import Box from "@/elements/Box/Box";
 import { getFleetData } from "@/utils/fleetOrders";
 import { getCurrentGameState, getPlayerFleets } from "@/utils/prismaUtil";
@@ -10,6 +11,7 @@ import { BUILDING_TYPE, Fleet, FleetOrder } from "@/utils/types";
 import { cache } from "react";
 
 // TODO: React suspense and loading states
+// TODO: Use tables for table data
 
 export const revalidate = 1800;
 
@@ -104,6 +106,9 @@ export default async function Home() {
         </Box>
         <Box className="flex mt-6">
           <CycleGainCard cycleComparison={cycleComparions ?? []} />
+        </Box>
+        <Box className="flex mt-6">
+          <TechnologyLevelCard players={gameState.players} />
         </Box>
       </Box>
     </main>

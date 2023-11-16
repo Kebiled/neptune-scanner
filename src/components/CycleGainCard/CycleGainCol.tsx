@@ -21,7 +21,7 @@ export default function CycleGainCol({ playerComparison }: CycleGainColProps) {
   return (
     <Box className="flex flex-col justify-between">
       {!playerComparison ? (
-        <Text className="text-black font-bold">Player Color</Text>
+        <Text className="text-black">Player Color</Text>
       ) : (
         <Box
           className={`my-auto mr-2 rounded-full w-4 h-4 bg-${
