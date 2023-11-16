@@ -1,3 +1,4 @@
+import { PrismaPromise } from "@prisma/client";
 import prisma from "../../lib/prisma";
 import { processDBOrder } from "./fleetOrders";
 import { Fleet, FleetOrder, Game, Player, Star, TechLevels } from "./types";
@@ -157,10 +158,10 @@ async function createOrUpdateFleetRecords(game: any, fleets: any) {
     const fleetData = fleets[fleetId];
     upserts.push(upsertFleet(game, fleetData, fleetId));
   }
-  await Promise.all(upserts);
+  await prisma.$transaction(upserts);
 }
 
-async function upsertFleet(game: any, fleetData: any, fleetId: string) {
+function upsertFleet(game: any, fleetData: any, fleetId: string) {
   return prisma.fleet.upsert({
     where: {
       gameId: game.gameNumber,
@@ -212,10 +213,10 @@ async function createOrUpdateStarRecords(game: any, stars: any) {
       upserts.push(upsertHiddenStar(game, starData, starId));
     }
   }
-  await Promise.all(upserts);
+  await prisma.$transaction(upserts);
 }
 
-async function upsertVisibleStar(game: any, starData: any, starId: string) {
+function upsertVisibleStar(game: any, starData: any, starId: string) {
   return prisma.star.upsert({
     where: {
       gameId: game.gameNumber,
@@ -254,7 +255,7 @@ async function upsertVisibleStar(game: any, starData: any, starId: string) {
   });
 }
 
-async function upsertHiddenStar(game: any, starData: any, starId: string) {
+function upsertHiddenStar(game: any, starData: any, starId: string) {
   return prisma.star.upsert({
     where: {
       gameId: game.gameNumber,
@@ -286,10 +287,10 @@ async function createOrUpdatePlayerRecords(game: any, players: any) {
     const playerData = players[playerId];
     upserts.push(upsertPlayer(game, playerData, playerId));
   }
-  await Promise.all(upserts);
+  await prisma.$transaction(upserts);
 }
 
-async function upsertPlayer(game: any, playerData: any, playerId: string) {
+function upsertPlayer(game: any, playerData: any, playerId: string) {
   return prisma.player.upsert({
     where: {
       gameId: game.gameNumber,
