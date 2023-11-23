@@ -1,6 +1,7 @@
 "use client";
 
 import Box from "@/elements/Box/Box";
+import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
 import Text from "@/elements/Text/Text";
 import { PLAYER_COLORS } from "@/utils/colors";
 import { Player } from "@/utils/types";
@@ -57,12 +58,7 @@ export default function FleetArrivalRow({
       </Box>
       {fleetData?.ownedBy ? (
         <Box className="flex w-1/5">
-          <Box
-            className={`my-auto mr-2 rounded-full w-4 h-4 bg-${
-              PLAYER_COLORS[fleetData?.ownedBy]
-            }`}
-          />
-
+          <PlayerColorCircle playerId={fleetData.ownedBy} />
           <Text className="text-black">
             {fleetData?.ownedBy
               ? getPlayerAliasById(players, fleetData?.ownedBy)
