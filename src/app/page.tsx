@@ -73,10 +73,10 @@ export default async function Home() {
         </Box>
         <IndustryCard players={gameState.players} />
         {/* TODO: toggle show this */}
-        {/*<FleetArrivalCard
-            fleetsData={fleetArrivalData}
-            players={gameState.players}
-          />*/}
+        <FleetArrivalCard
+          fleetsData={fleetArrivalData}
+          players={gameState.players}
+        />
         <CycleGainCard cycleComparison={cycleComparions ?? []} />
         <TechnologyLevelCard players={gameState.players} />
         {/* <IndustryChartCard data={chartData} /> */}
