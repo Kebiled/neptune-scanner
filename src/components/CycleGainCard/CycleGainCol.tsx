@@ -1,4 +1,5 @@
 import Box from "@/elements/Box/Box";
+import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
 import Text from "@/elements/Text/Text";
 import { PLAYER_COLORS } from "@/utils/colors";
 
@@ -23,11 +24,7 @@ export default function CycleGainCol({ playerComparison }: CycleGainColProps) {
       {!playerComparison ? (
         <Text className="text-black">Player Color</Text>
       ) : (
-        <Box
-          className={`my-auto mr-2 rounded-full w-4 h-4 bg-${
-            PLAYER_COLORS[playerComparison.playerId]
-          }`}
-        />
+        <PlayerColorCircle playerId={playerComparison.playerId} />
       )}
       <Text className={textClassName}>
         {!playerComparison ? "Stars" : `${playerComparison.starGain}`}

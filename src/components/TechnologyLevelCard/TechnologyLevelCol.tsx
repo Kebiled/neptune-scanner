@@ -1,4 +1,5 @@
 import Box from "@/elements/Box/Box";
+import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
 import Text from "@/elements/Text/Text";
 import { PLAYER_COLORS } from "@/utils/colors";
 import { Player } from "@/utils/types";
@@ -18,11 +19,7 @@ export default function TechnologyLevelCol({
       {!player ? (
         <Text className="text-black">Player Color</Text>
       ) : (
-        <Box
-          className={`my-auto mr-2 rounded-full w-4 h-4 bg-${
-            PLAYER_COLORS[player.playerId]
-          }`}
-        />
+        <PlayerColorCircle playerId={player.playerId} />
       )}
       <Text className={textClassName}>
         {!player ? "Weapons" : `${player.tech?.weapons.level}`}

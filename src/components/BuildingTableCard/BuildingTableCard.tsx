@@ -2,6 +2,7 @@ import { BUILDING_TYPE, Player } from "@/utils/types";
 import Text from "@/elements/Text/Text";
 import { PLAYER_COLORS } from "@/utils/colors";
 import Box from "@/elements/Box/Box";
+import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
 
 function sortPlayers(players: Player[], buildingType: BUILDING_TYPE) {
   switch (buildingType) {
@@ -51,11 +52,7 @@ export default function BuildingTableCard({
               key={player.playerId}
             >
               <Box className="flex">
-                <Box
-                  className={`my-auto mr-2 rounded-full w-4 h-4 bg-${
-                    PLAYER_COLORS[player.playerId]
-                  }`}
-                />
+                <PlayerColorCircle playerId={player.playerId} />
                 <Text className={`text-black`}>{player.alias}</Text>
               </Box>
               <Text className="text-black ml-3">{`${getPlayerBuildingValue(

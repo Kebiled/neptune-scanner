@@ -18,7 +18,7 @@ export default function CycleGainCard({ cycleComparison }: CycleGainCardProps) {
   return (
     <Box className="w-[800px] min-h-[200px] bg-slate-200 rounded-md px-3 pt-3">
       <Text className="text-black font-bold text-lg">
-        Gained Over Last Cycle
+        Changes Over Last Cycle
       </Text>
       <Box className="flex flex-row w-full justify-between mt-10 mb-5">
         <Box className="mr-20">

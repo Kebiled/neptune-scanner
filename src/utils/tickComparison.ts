@@ -2,6 +2,7 @@ import { getSnapshot } from "./prismaUtil";
 import { Player } from "./types";
 
 // TODO: remove WetTortilla harcodes
+// TODO: add research increases
 export async function playerTickComparison(startTick: number, endTick: number) {
   const startSnapshot = await getSnapshot(startTick);
   const endSnapshot = await getSnapshot(endTick);

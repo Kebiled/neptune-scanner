@@ -4,6 +4,7 @@ const LIGHT_YEAR_CONVERTER = 8; // 8 LY per 1 on coordinates grid
 const REGULAR_SPEED = 1 / 3; // 0.33 per tick
 const WARP_SPEED = 1; // 1LY per tick
 const TICK_LENGTH_SECONDS = 3600; // 1hr per tick
+// TODO: add tick rate to the above ^
 
 // TODO: calculations seem messy
 

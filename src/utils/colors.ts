@@ -7,3 +7,14 @@ export const PLAYER_COLORS = [
   "red-600", // O D O PISS - 5
   "fuchsia-500", // HOT MILKY - 6
 ];
+
+// TODO: RGB
+export const PLAYER_COLORS_RBG = [
+  "rgb(29, 78, 216)",
+  "rgb(34, 211, 238)",
+  "rgb(34, 197, 94)",
+  "rgb(234, 179, 8)",
+  "rgb(249, 115, 22)",
+  "rgb(220, 38, 38)",
+  "rgb(217, 70, 239)",
+];

@@ -54,6 +54,7 @@ async function getFleetArrivalTime(fleet: Fleet, gameStateTime: number) {
   return firstOrderArrivalTime;
 }
 
+// TODO: change so that it returns loops, enemy battles, and new planets as different objects using the orders
 export async function getFleetData(fleets: Fleet[], gameStateTime: number) {
   const fleetsOrderData = await Promise.all(
     fleets.map(async (fleet: Fleet) => {
