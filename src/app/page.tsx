@@ -6,6 +6,7 @@ import IndustryCard from "@/components/IndustryCard/IndustryCard";
 import LeaderboardCard from "@/components/LeaderboardCard/LeaderboardCard";
 import TechnologyLevelCard from "@/components/TechnologyLevelCard/TechnologyLevelCard";
 import Box from "@/elements/Box/Box";
+import RefreshButton from "@/elements/RefreshButton/RefreshButton";
 import { getIndustryDataset } from "@/utils/datasets";
 import {
   getFleetArrivalData,
@@ -51,6 +52,7 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-slate-400">
       <Box className="flex flex-col gap-y-6">
+        <RefreshButton />
         <LeaderboardCard
           gameName={gameState.name}
           gameState={gameState}
