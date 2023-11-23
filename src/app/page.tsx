@@ -27,7 +27,7 @@ import { cache } from "react";
 
 export const revalidate = 300;
 
-export async function getGameState(gameNumber: string) {
+async function getGameState(gameNumber: string) {
   const gameState = cache(async (gameNumber: string) => {
     const item = await getCurrentGameState(gameNumber);
     return item;
@@ -36,7 +36,7 @@ export async function getGameState(gameNumber: string) {
   return gameState(gameNumber);
 }
 
-export async function getFleets(playerId: number, gameNumber: string) {
+async function getFleets(playerId: number, gameNumber: string) {
   const playerFleets = cache(async (playerId: number, gameNumber: string) => {
     const item = await getPlayerFleets(playerId, gameNumber);
     return item;
@@ -45,7 +45,7 @@ export async function getFleets(playerId: number, gameNumber: string) {
   return playerFleets(playerId, gameNumber);
 }
 
-export async function getLastCycleComparison(currentTick: number) {
+async function getLastCycleComparison(currentTick: number) {
   const currentCycle = Math.floor(currentTick / 24);
   if (currentCycle === 0) return null;
   const endTick = currentCycle * 24;
@@ -58,7 +58,7 @@ export async function getLastCycleComparison(currentTick: number) {
   return cycleComparison(startTick, endTick);
 }
 
-export async function getFleetArrivalData(
+async function getFleetArrivalData(
   playerFleets: Fleet[],
   gameStateTime: number
 ) {
