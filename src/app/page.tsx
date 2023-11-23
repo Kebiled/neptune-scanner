@@ -8,13 +8,11 @@ import TechnologyLevelCard from "@/components/TechnologyLevelCard/TechnologyLeve
 import Box from "@/elements/Box/Box";
 import RefreshButton from "@/elements/RefreshButton/RefreshButton";
 import { getIndustryDataset } from "@/utils/datasets";
-import {
-  getFleetArrivalData,
-  getFleets,
-  getGameState,
-  getLastCycleComparison,
-} from "@/utils/prismaUtil";
+import { getFleetData } from "@/utils/fleetOrders";
+import { getCurrentGameState, getPlayerFleets } from "@/utils/prismaUtil";
+import { playerTickComparison } from "@/utils/tickComparison";
 import { BUILDING_TYPE, Fleet, FleetOrder } from "@/utils/types";
+import { cache } from "react";
 
 // TODO: React suspense and loading states
 // TODO: run db poller on T2 micro
@@ -26,6 +24,53 @@ import { BUILDING_TYPE, Fleet, FleetOrder } from "@/utils/types";
 // TODO: current research tech, how long, next research tech, and how long it'd take to research any others
 // TODO: Replicate data tables from game
 // TODO: how much money you will earn next cycle
+
+export const revalidate = 300;
+
+export async function getGameState(gameNumber: string) {
+  const gameState = cache(async (gameNumber: string) => {
+    const item = await getCurrentGameState(gameNumber);
+    return item;
+  });
+
+  return gameState(gameNumber);
+}
+
+export async function getFleets(playerId: number, gameNumber: string) {
+  const playerFleets = cache(async (playerId: number, gameNumber: string) => {
+    const item = await getPlayerFleets(playerId, gameNumber);
+    return item;
+  });
+
+  return playerFleets(playerId, gameNumber);
+}
+
+export async function getLastCycleComparison(currentTick: number) {
+  const currentCycle = Math.floor(currentTick / 24);
+  if (currentCycle === 0) return null;
+  const endTick = currentCycle * 24;
+  const startTick = endTick - 24;
+  const cycleComparison = cache(async (startTick: number, endTick: number) => {
+    const item = await playerTickComparison(startTick, endTick);
+    return item;
+  });
+
+  return cycleComparison(startTick, endTick);
+}
+
+export async function getFleetArrivalData(
+  playerFleets: Fleet[],
+  gameStateTime: number
+) {
+  const playerFleetData = cache(
+    async (playerFleets: Fleet[], gameStateTime: number) => {
+      const item = await getFleetData(playerFleets, gameStateTime);
+      return item;
+    }
+  );
+
+  return playerFleetData(playerFleets, gameStateTime);
+}
 
 export default async function Home() {
   if (!process.env.GAME_NUMBER) throw new Error("No game number in env");

@@ -1,8 +1,6 @@
-import { cache } from "react";
 import prisma from "../../lib/prisma";
-import { getFleetData, processDBOrder } from "./fleetOrders";
-import { Fleet, FleetOrder, Game, Player, Star, TechLevels } from "./types";
-import { playerTickComparison } from "./tickComparison";
+import { processDBOrder } from "./fleetOrders";
+import { Game, Player, Star, TechLevels } from "./types";
 
 // TODO: Type Game Object and process data before storing in DB
 // TODO: Rewrite DB types and model
@@ -453,50 +451,3 @@ export async function getPlayerFleets(playerId: number, gameNumber: string) {
 }
 
 // Cached fetches from DB
-
-export const revalidate = 300;
-
-export async function getGameState(gameNumber: string) {
-  const gameState = cache(async (gameNumber: string) => {
-    const item = await getCurrentGameState(gameNumber);
-    return item;
-  });
-
-  return gameState(gameNumber);
-}
-
-export async function getFleets(playerId: number, gameNumber: string) {
-  const playerFleets = cache(async (playerId: number, gameNumber: string) => {
-    const item = await getPlayerFleets(playerId, gameNumber);
-    return item;
-  });
-
-  return playerFleets(playerId, gameNumber);
-}
-
-export async function getLastCycleComparison(currentTick: number) {
-  const currentCycle = Math.floor(currentTick / 24);
-  if (currentCycle === 0) return null;
-  const endTick = currentCycle * 24;
-  const startTick = endTick - 24;
-  const cycleComparison = cache(async (startTick: number, endTick: number) => {
-    const item = await playerTickComparison(startTick, endTick);
-    return item;
-  });
-
-  return cycleComparison(startTick, endTick);
-}
-
-export async function getFleetArrivalData(
-  playerFleets: Fleet[],
-  gameStateTime: number
-) {
-  const playerFleetData = cache(
-    async (playerFleets: Fleet[], gameStateTime: number) => {
-      const item = await getFleetData(playerFleets, gameStateTime);
-      return item;
-    }
-  );
-
-  return playerFleetData(playerFleets, gameStateTime);
-}
