@@ -6,8 +6,7 @@ import Text from "@/elements/Text/Text";
 import { Player } from "@/utils/types";
 import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
 import IndustryCardCol from "./IndustryCardCol";
-import { usePlayers } from "@/utils/dataHooks";
-import { getApiKey, getGameNumber } from "@/app/page";
+import { getApiKey, getGameNumber, usePlayers } from "@/utils/dataHooks";
 
 export default function IndustryCard() {
   const apiKey = getApiKey();

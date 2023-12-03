@@ -4,8 +4,11 @@ import Box from "@/elements/Box/Box";
 import Text from "@/elements/Text/Text";
 import CycleGainCol from "./CycleGainCol";
 import { CycleComparison } from "@/utils/types";
-import { getApiKey, getGameNumber } from "@/app/page";
-import { useLastCycleComparison } from "@/utils/dataHooks";
+import {
+  getApiKey,
+  getGameNumber,
+  useLastCycleComparison,
+} from "@/utils/dataHooks";
 import Card, { CardSizeEnum } from "../Card/Card";
 
 export default function CycleGainContent() {

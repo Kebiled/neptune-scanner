@@ -4,8 +4,12 @@ import Box from "@/elements/Box/Box";
 import Text from "@/elements/Text/Text";
 import { Player } from "@/utils/types";
 import FleetArrivalRow from "./FleetArrivalRow";
-import { getApiKey, getGameNumber, getPlayerId } from "@/app/page";
-import { usePlayerFleets } from "@/utils/dataHooks";
+import {
+  getApiKey,
+  getGameNumber,
+  getPlayerId,
+  usePlayerFleets,
+} from "@/utils/dataHooks";
 
 // TODO: find somewhere for this to live
 const PLAYERS = [

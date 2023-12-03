@@ -5,8 +5,7 @@ import Text from "@/elements/Text/Text";
 import { PLAYER_COLORS } from "@/utils/colors";
 import Box from "@/elements/Box/Box";
 import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
-import { usePlayers } from "@/utils/dataHooks";
-import { getApiKey, getGameNumber } from "@/app/page";
+import { getApiKey, getGameNumber, usePlayers } from "@/utils/dataHooks";
 
 function sortPlayers(players: Player[], buildingType: BUILDING_TYPE) {
   switch (buildingType) {

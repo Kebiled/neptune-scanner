@@ -27,21 +27,6 @@ import { cache } from "react";
 // TODO: how much money you will earn next cycle
 // TODO: look into prisma proxy connections
 
-// TODO: Replace these with DB fetch or current game somewhere
-const GAME_NUMBER = "6420290023981056";
-const API_KEY = "gazRh6";
-const PLAYER_ID = 5;
-
-export function getGameNumber() {
-  return GAME_NUMBER;
-}
-export function getApiKey() {
-  return API_KEY;
-}
-export function getPlayerId() {
-  return PLAYER_ID;
-}
-
 export const revalidate = 300;
 
 async function getGameState(gameNumber: string) {
@@ -51,42 +36,6 @@ async function getGameState(gameNumber: string) {
   });
 
   return gameState(gameNumber);
-}
-
-async function getFleets(playerId: number, gameNumber: string) {
-  const playerFleets = cache(async (playerId: number, gameNumber: string) => {
-    const item = await getPlayerFleets(playerId, gameNumber);
-    return item;
-  });
-
-  return playerFleets(playerId, gameNumber);
-}
-
-async function getLastCycleComparison(currentTick: number) {
-  const currentCycle = Math.floor(currentTick / 24);
-  if (currentCycle === 0) return null;
-  const endTick = currentCycle * 24;
-  const startTick = endTick - 24;
-  const cycleComparison = cache(async (startTick: number, endTick: number) => {
-    const item = await playerTickComparison(startTick, endTick);
-    return item;
-  });
-
-  return cycleComparison(startTick, endTick);
-}
-
-async function getFleetArrivalData(
-  playerFleets: Fleet[],
-  gameStateTime: number
-) {
-  const playerFleetData = cache(
-    async (playerFleets: Fleet[], gameStateTime: number) => {
-      const item = await getFleetData(playerFleets, gameStateTime);
-      return item;
-    }
-  );
-
-  return playerFleetData(playerFleets, gameStateTime);
 }
 
 export default async function Home() {

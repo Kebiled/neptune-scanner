@@ -4,8 +4,7 @@ import Box from "@/elements/Box/Box";
 import Text from "@/elements/Text/Text";
 import { Player } from "@/utils/types";
 import TechnologyLevelCol from "./TechnologyLevelCol";
-import { getApiKey, getGameNumber } from "@/app/page";
-import { usePlayers } from "@/utils/dataHooks";
+import { getApiKey, getGameNumber, usePlayers } from "@/utils/dataHooks";
 
 export default function TechnologyLevelCard() {
   const apiKey = getApiKey();

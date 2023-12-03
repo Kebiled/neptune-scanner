@@ -6,8 +6,7 @@ import { PLAYER_COLORS } from "@/utils/colors";
 import { getNextCycleDate } from "@/utils/time";
 import { Game, Player } from "@/utils/types";
 import LeaderboardProductionCycle from "./LeaderboardProductionCycle";
-import { getApiKey, getGameNumber } from "@/app/page";
-import { usePlayers } from "@/utils/dataHooks";
+import { getApiKey, getGameNumber, usePlayers } from "@/utils/dataHooks";
 
 type LeaderboardCardProps = {
   gameName: string;

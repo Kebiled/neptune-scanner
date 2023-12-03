@@ -73,3 +73,18 @@ export function useLastCycleComparison(gameNumber: string, apiKey: string) {
     isError: error,
   };
 }
+
+// move to DB
+const GAME_NUMBER = "6420290023981056";
+const API_KEY = "gazRh6";
+const PLAYER_ID = 5;
+
+export function getGameNumber() {
+  return GAME_NUMBER;
+}
+export function getApiKey() {
+  return API_KEY;
+}
+export function getPlayerId() {
+  return PLAYER_ID;
+}
