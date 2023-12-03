@@ -44,9 +44,9 @@ export function getTimeToArrivalForFleet(
   const arrivalDate = new Date(arrivalTime);
   const now = Date.now();
   // const secondsToArrival = (arrivalDate.getTime() - now) / 1000;
-  const seconds = (arrivalDate.getTime() - now) / 1000;
-  const minutes = seconds / 60;
-  const hours = minutes / 60;
+  // const seconds = (arrivalDate.getTime() - now) / 1000;
+  // const minutes = seconds / 60;
+  // const hours = minutes / 60;
   return arrivalDate;
   // return hours;
 }

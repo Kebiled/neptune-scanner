@@ -171,3 +171,21 @@ export type Coord = {
   x: number;
   y: number;
 };
+
+export type FleetArrivalData = {
+  starName?: string | null | undefined;
+  ownedBy?: number | null | undefined;
+  starStrength?: number | null | undefined;
+  fleetStrength?: number | null | undefined;
+  arrivalDate?: Date | null;
+} | null;
+
+export type CycleComparison = ({
+  alias: string;
+  playerId: number;
+  starGain: number;
+  shipsGain: number;
+  economyGain: number;
+  industryGain: number;
+  scienceGain: number;
+} | null)[];

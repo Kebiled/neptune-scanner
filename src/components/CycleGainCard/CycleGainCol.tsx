@@ -22,7 +22,7 @@ export default function CycleGainCol({ playerComparison }: CycleGainColProps) {
   return (
     <Box className="flex flex-col justify-between">
       {!playerComparison ? (
-        <Text className="text-black">Player Color</Text>
+        <Text className="text-black whitespace-pre">Player Color</Text>
       ) : (
         <PlayerColorCircle playerId={playerComparison.playerId} />
       )}

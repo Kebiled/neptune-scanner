@@ -4,6 +4,7 @@ import FleetArrivalCard from "@/components/FleetArrivalCard/FleetArrivalCard";
 import IndustryCard from "@/components/IndustryCard/IndustryCard";
 // import IndustryChartCard from "@/components/IndustryChartCard/IndustryChartCard";
 import LeaderboardCard from "@/components/LeaderboardCard/LeaderboardCard";
+import { SWRProvider } from "@/components/SWRProvider/SWRProvider";
 import TechnologyLevelCard from "@/components/TechnologyLevelCard/TechnologyLevelCard";
 import Box from "@/elements/Box/Box";
 import RefreshButton from "@/elements/RefreshButton/RefreshButton";
@@ -24,6 +25,22 @@ import { cache } from "react";
 // TODO: current research tech, how long, next research tech, and how long it'd take to research any others
 // TODO: Replicate data tables from game
 // TODO: how much money you will earn next cycle
+// TODO: look into prisma proxy connections
+
+// TODO: Replace these with DB fetch or current game somewhere
+const GAME_NUMBER = "6420290023981056";
+const API_KEY = "gazRh6";
+const PLAYER_ID = 5;
+
+export function getGameNumber() {
+  return GAME_NUMBER;
+}
+export function getApiKey() {
+  return API_KEY;
+}
+export function getPlayerId() {
+  return PLAYER_ID;
+}
 
 export const revalidate = 300;
 
@@ -75,19 +92,19 @@ async function getFleetArrivalData(
 export default async function Home() {
   if (!process.env.GAME_NUMBER) throw new Error("No game number in env");
   const gameState = await getGameState(process.env.GAME_NUMBER);
-  const playerFleets = (
-    await getFleets(gameState.playerUid ?? -1, process.env.GAME_NUMBER)
-  ).map((fleet) => ({
-    ...fleet,
-    o: fleet.o ? fleet.o.filter((o): o is FleetOrder => o !== undefined) : [],
-  }));
-  const fleetArrivalData = await getFleetArrivalData(
-    playerFleets,
-    Number(gameState.now)
-  );
-  const cycleComparions = await getLastCycleComparison(
-    gameState.tick ? gameState.tick - (gameState.tick % 24) : 0
-  );
+  // const playerFleets = (
+  //   await getFleets(gameState.playerUid ?? -1, process.env.GAME_NUMBER)
+  // ).map((fleet) => ({
+  //   ...fleet,
+  //   o: fleet.o ? fleet.o.filter((o): o is FleetOrder => o !== undefined) : [],
+  // }));
+  // const fleetArrivalData = await getFleetArrivalData(
+  //   playerFleets,
+  //   Number(gameState.now)
+  // );
+  // const cycleComparions = await getLastCycleComparison(
+  //   gameState.tick ? gameState.tick - (gameState.tick % 24) : 0
+  // );
   // const chartData = await getIndustryDataset({
   //   startTick: 0,
   //   endTick: gameState.tick ?? 0,
@@ -97,35 +114,28 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-slate-400">
       <Box className="flex flex-col gap-y-6">
-        <RefreshButton />
-        <LeaderboardCard
-          gameName={gameState.name}
-          gameState={gameState}
-          gameTick={gameState.tick ?? -1}
-          players={gameState.players}
-        />
-        <Box className="flex flex-row justify-between">
-          <BuildingTableCard
-            players={gameState.players}
-            buildingType={BUILDING_TYPE.ECONOMY}
+        {/* <RefreshButton /> */}
+        <SWRProvider>
+          <LeaderboardCard
+            gameName={gameState.name}
+            gameState={gameState}
+            gameTick={gameState.tick ?? -1}
           />
-          <BuildingTableCard
-            players={gameState.players}
-            buildingType={BUILDING_TYPE.INDUSTRY}
-          />
-          <BuildingTableCard
-            players={gameState.players}
-            buildingType={BUILDING_TYPE.SCIENCE}
-          />
-        </Box>
-        <IndustryCard players={gameState.players} />
+          <Box className="flex flex-row justify-between">
+            <BuildingTableCard buildingType={BUILDING_TYPE.ECONOMY} />
+            <BuildingTableCard buildingType={BUILDING_TYPE.INDUSTRY} />
+            <BuildingTableCard buildingType={BUILDING_TYPE.SCIENCE} />
+          </Box>
+          <IndustryCard />
+          <CycleGainCard />
+          <TechnologyLevelCard />
+          <FleetArrivalCard />
+        </SWRProvider>
+
         {/* TODO: toggle show this */}
-        <FleetArrivalCard
-          fleetsData={fleetArrivalData}
-          players={gameState.players}
-        />
-        <CycleGainCard cycleComparison={cycleComparions ?? []} />
-        <TechnologyLevelCard players={gameState.players} />
+        {/* 
+        
+        <TechnologyLevelCard players={gameState.players} /> */}
         {/* <IndustryChartCard data={chartData} /> */}
       </Box>
     </main>

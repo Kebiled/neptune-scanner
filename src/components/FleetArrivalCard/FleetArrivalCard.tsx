@@ -1,7 +1,11 @@
+"use client";
+
 import Box from "@/elements/Box/Box";
 import Text from "@/elements/Text/Text";
 import { Player } from "@/utils/types";
 import FleetArrivalRow from "./FleetArrivalRow";
+import { getApiKey, getGameNumber, getPlayerId } from "@/app/page";
+import { usePlayerFleets } from "@/utils/dataHooks";
 
 // TODO: find somewhere for this to live
 const PLAYERS = [
@@ -14,22 +18,25 @@ const PLAYERS = [
   "fuchsia-500", // HOT MILKY - 6
 ];
 
-type FleetArrivalCardProps = {
-  fleetsData: ({
-    starName: string | null | undefined;
-    ownedBy: number | null | undefined;
-    starStrength: number | null | undefined;
-    fleetStrength: number | null | undefined;
-    arrivalDate: Date | null | undefined;
-  } | null)[];
-  players: Player[];
-};
-
 // TODO: add amount of ships in fleet, amount of ships on target planet add battle calc
-export default function FleetArrivalCard({
-  fleetsData,
-  players,
-}: FleetArrivalCardProps) {
+export default function FleetArrivalCard() {
+  const apiKey = getApiKey();
+  const gameNumber = getGameNumber();
+  const playerId = getPlayerId();
+  const { fleets, isLoading, isError } = usePlayerFleets(
+    gameNumber,
+    apiKey,
+    playerId
+  );
+
+  if (isLoading || !fleets) {
+    return (
+      <Box className="w-[800px] min-h-[200px] bg-slate-200 rounded-md px-3 pt-3">
+        <Text className="text-black">Loading...</Text>
+      </Box>
+    );
+  }
+
   return (
     <Box className="w-[800px] min-h-[200px] bg-slate-200 rounded-md px-3 pt-3">
       <Text className="text-black font-bold text-lg">Fleet Arrival</Text>
@@ -52,12 +59,18 @@ export default function FleetArrivalCard({
             <Text className="text-black font-bold">Time Left</Text>
           </Box>
         </Box>
-        {fleetsData
-          .filter((fleetData) => fleetData && fleetData.arrivalDate)
+        {fleets
+          .filter((fleet) => fleet && fleet.arrivalDate)
+          .map((fleet) => {
+            return {
+              ...fleet,
+              arrivalDate: new Date(fleet?.arrivalDate ?? -1),
+            };
+          })
           .sort(
             (a, b) =>
-              (a?.arrivalDate as Date).getTime() -
-              (b?.arrivalDate as Date).getTime()
+              new Date(a?.arrivalDate).getTime() -
+              new Date(b?.arrivalDate).getTime()
           )
           .map((fleetData) => {
             if (!fleetData?.arrivalDate) return null;
@@ -66,7 +79,6 @@ export default function FleetArrivalCard({
                 key={fleetData?.arrivalDate?.getTime()}
                 fleetData={fleetData}
                 arrivalDate={fleetData.arrivalDate}
-                players={players}
               />
             );
           })}

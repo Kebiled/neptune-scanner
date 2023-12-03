@@ -1,22 +1,17 @@
 "use client";
 
+import { getApiKey, getGameNumber } from "@/app/page";
 import Box from "@/elements/Box/Box";
 import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
 import Text from "@/elements/Text/Text";
 import { PLAYER_COLORS } from "@/utils/colors";
-import { Player } from "@/utils/types";
+import { usePlayers } from "@/utils/dataHooks";
+import { FleetArrivalData, Player } from "@/utils/types";
 import React, { useState, useEffect } from "react";
 
 type FleetArrivalRowProps = {
-  fleetData: {
-    starName: string | null | undefined;
-    ownedBy: number | null | undefined;
-    starStrength: number | null | undefined;
-    fleetStrength: number | null | undefined;
-    arrivalDate: Date | null | undefined;
-  } | null;
+  fleetData: FleetArrivalData;
   arrivalDate: Date;
-  players: Player[];
 };
 
 function getPlayerAliasById(players: Player[], id: number) {
@@ -28,9 +23,12 @@ function getPlayerAliasById(players: Player[], id: number) {
 export default function FleetArrivalRow({
   fleetData,
   arrivalDate,
-  players,
 }: FleetArrivalRowProps) {
   const [timeLeft, setTimeLeft] = useState<string>("");
+
+  const apiKey = getApiKey();
+  const gameNumber = getGameNumber();
+  const { players, isLoading, isError } = usePlayers(gameNumber, apiKey);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -51,17 +49,21 @@ export default function FleetArrivalRow({
     return () => clearInterval(interval);
   }, [arrivalDate]);
 
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <Box className="flex flex-row justify-between">
       <Box className="w-1/5">
         <Text className="text-black">{fleetData?.starName}</Text>
       </Box>
-      {fleetData?.ownedBy ? (
+      {fleetData?.ownedBy || fleetData?.ownedBy === 0 ? (
         <Box className="flex w-1/5">
           <PlayerColorCircle playerId={fleetData.ownedBy} />
           <Text className="text-black">
-            {fleetData?.ownedBy
-              ? getPlayerAliasById(players, fleetData?.ownedBy)
+            {fleetData.ownedBy || fleetData?.ownedBy === 0
+              ? getPlayerAliasById(players, fleetData.ownedBy)
               : "None"}
           </Text>
         </Box>

@@ -1,4 +1,5 @@
 import { pushObjectToDatabase } from "@/utils/prismaUtil";
+import { revalidatePath } from "next/cache";
 
 const GAME_NUMBER = "6420290023981056";
 
@@ -20,6 +21,7 @@ export async function GET() {
     }
 
     const gameData = await response.json();
+    revalidatePath("/");
 
     // // Push the game object data to the database using your function
     await pushObjectToDatabase(gameData, GAME_NUMBER);

@@ -13,6 +13,11 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      // prettier-ignore
+      width: {
+        "cardSmall": "250px",
+        "cardLarge": "800px",
+      },
     },
   },
   safelist: [
