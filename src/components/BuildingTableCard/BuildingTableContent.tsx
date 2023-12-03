@@ -47,7 +47,7 @@ export default function BuildingTableContent({
 
   if (isLoading) {
     return (
-      <Box className="w-full h-[200px] bg-slate-300 rounded-md animate-pusle" />
+      <Box className="w-full h-[200px] bg-slate-300 rounded-md animate-pusle mt-10 mb-5" />
     );
   }
 
