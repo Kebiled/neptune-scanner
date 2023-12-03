@@ -41,16 +41,22 @@ export async function pushObjectToDatabase(
     players,
   } = gameObject.scanning_data;
 
+  console.log(gameObject.scanning_data.stars);
+
   const currentGameState = (await prisma.game.findUnique({
     where: {
       gameNumber,
     },
   })) as Game;
 
-  // if (currentGameState.tick === gameObject.scanning_data.tick) {
-  //   await prisma.$disconnect();
-  //   throw new Error("API data already in DB - Same tick value");
-  // }
+  // fetch stars from db as they are relational
+  // const isDarkGalaxy =
+  //   currentGameState.totalStars === currentGameState.stars.length;
+
+  if (currentGameState.tick === gameObject.scanning_data.tick) {
+    await prisma.$disconnect();
+    throw new Error("API data already in DB - Same tick value");
+  }
 
   // Create or update the game record
   const game = await prisma.game.upsert({
@@ -144,6 +150,17 @@ export async function pushObjectToDatabase(
     });
   }
 
+  // if (!currentGameState) {
+  //   // create objects
+  // } else if (isDarkGalaxy) {
+  //   // upsertVisibleStars
+  //   // upsertFleets
+  //   // update objects
+  // } else {
+  //   // upsertFleets
+  //   // update objects
+  // }
+
   await createOrUpdateFleetRecords(game, fleets);
   await createOrUpdateStarRecords(game, stars);
   await createOrUpdatePlayerRecords(game, players);
@@ -207,7 +224,7 @@ async function createOrUpdateStarRecords(game: any, stars: any) {
   const upserts = [];
   for (const starId in stars) {
     const starData = stars[starId];
-    if (starData.visible) {
+    if (starData.v) {
       upserts.push(upsertVisibleStar(game, starData, starId));
     } else {
       upserts.push(upsertHiddenStar(game, starData, starId));

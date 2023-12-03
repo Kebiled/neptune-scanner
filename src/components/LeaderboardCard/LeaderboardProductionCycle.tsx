@@ -2,8 +2,6 @@
 
 import Box from "@/elements/Box/Box";
 import Text from "@/elements/Text/Text";
-import { getNextCycleDate } from "@/utils/time";
-import { Game } from "@/utils/types";
 import { useEffect, useState } from "react";
 
 type LeaderboardProductionCycleProps = {

@@ -1,15 +1,22 @@
+"use client";
+
 import Box from "@/elements/Box/Box";
 import Text from "@/elements/Text/Text";
-import { Player } from "@/utils/types";
 import TechnologyLevelCol from "./TechnologyLevelCol";
+import { getApiKey, getGameNumber, usePlayers } from "@/utils/dataHooks";
 
-type TechnologyLevelCardProps = {
-  players: Player[];
-};
+export default function TechnologyLevelCard() {
+  const apiKey = getApiKey();
+  const gameNumber = getGameNumber();
+  const { players, isLoading, isError } = usePlayers(gameNumber, apiKey);
 
-export default function TechnologyLevelCard({
-  players,
-}: TechnologyLevelCardProps) {
+  if (isLoading) {
+    return (
+      <Box className="w-[800px] min-h-[200px] bg-slate-200 rounded-md px-3 pt-3">
+        <Text className="text-black">Loading...</Text>
+      </Box>
+    );
+  }
   return (
     <Box className="w-[800px] min-h-[200px] bg-slate-200 rounded-md px-3 pt-3">
       <Text className="text-black font-bold text-lg">Technology Level</Text>
