@@ -4,7 +4,7 @@ import Box from "@/elements/Box/Box";
 import Text from "@/elements/Text/Text";
 import { PLAYER_COLORS } from "@/utils/colors";
 import { getNextCycleDate } from "@/utils/time";
-import { Game, Player } from "@/utils/types";
+import { Game } from "@/utils/types";
 import LeaderboardProductionCycle from "./LeaderboardProductionCycle";
 import { getApiKey, getGameNumber, usePlayers } from "@/utils/dataHooks";
 

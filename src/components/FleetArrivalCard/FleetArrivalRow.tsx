@@ -3,7 +3,6 @@
 import Box from "@/elements/Box/Box";
 import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
 import Text from "@/elements/Text/Text";
-import { PLAYER_COLORS } from "@/utils/colors";
 import { getApiKey, getGameNumber, usePlayers } from "@/utils/dataHooks";
 import { FleetArrivalData, Player } from "@/utils/types";
 import React, { useState, useEffect } from "react";

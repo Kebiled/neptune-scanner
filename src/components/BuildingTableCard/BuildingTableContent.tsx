@@ -2,7 +2,6 @@
 
 import { BUILDING_TYPE, Player } from "@/utils/types";
 import Text from "@/elements/Text/Text";
-import { PLAYER_COLORS } from "@/utils/colors";
 import Box from "@/elements/Box/Box";
 import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
 import { getApiKey, getGameNumber, usePlayers } from "@/utils/dataHooks";

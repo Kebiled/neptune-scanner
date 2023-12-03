@@ -2,7 +2,6 @@
 
 import Box from "@/elements/Box/Box";
 import Text from "@/elements/Text/Text";
-import { Player } from "@/utils/types";
 import FleetArrivalRow from "./FleetArrivalRow";
 import {
   getApiKey,

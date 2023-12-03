@@ -3,8 +3,6 @@
 import React from "react";
 import Box from "@/elements/Box/Box";
 import Text from "@/elements/Text/Text";
-import { Player } from "@/utils/types";
-import { PlayerColorCircle } from "@/elements/PlayerColorCircle/PlayerColorCircle";
 import IndustryCardCol from "./IndustryCardCol";
 import { getApiKey, getGameNumber, usePlayers } from "@/utils/dataHooks";
 
