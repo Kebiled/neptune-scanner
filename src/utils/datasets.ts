@@ -1,110 +1,92 @@
 // cache this function
 
-import { cache } from "react";
+import { Player } from "@prisma/client";
 import { getCurrentGameState, getSnapshot } from "./prismaUtil";
-import { PLAYER_COLORS_RBG } from "./colors";
+import { SnapshotPlayer } from "./types";
 
-type PlayerDatasetType = {
-  [playerName: string]: {
-    id: number;
-    industryDataset: number[];
-  };
+export type SnapshotDatasetType = {
+  name: number;
+  [key: number]: number | null | undefined;
 };
 
-async function buildPlayerDatasets({
+export type DatasetType = {
+  data: SnapshotDatasetType[];
+};
+
+export type DatasetsType = {
+  industry: DatasetType;
+  economy: DatasetType;
+  science: DatasetType;
+  stars: DatasetType;
+  ships: DatasetType;
+};
+
+export async function buildDatasets({
+  gameNumber,
   startTick,
   endTick,
   tickInterval,
 }: {
+  gameNumber: string;
   startTick: number;
   endTick: number;
   tickInterval: number;
 }) {
-  const gameNumber = process.env.GAME_NUMBER;
-  const gameState = await getCurrentGameState(gameNumber ?? "");
-  const players = gameState.players.map((player) => {
-    return { alias: player.alias ?? "", id: String(player.uid) ?? "-1" };
-  });
+  // const gameState = await getCurrentGameState(gameNumber);
+  // const players = gameState.players.map((player) => {
+  //   return { alias: player.alias ?? "", id: player.uid ?? -1 };
+  // });
 
+  // TODO: batch prisma transactions then sort by snapshot id?
   let snapshots = [];
-  let labels = [];
-  for (let i = startTick; i < endTick; i += tickInterval) {
+  for (let i = startTick; i <= endTick; i += tickInterval) {
     const snapshot = await getSnapshot(i);
-    snapshots.push(snapshot);
-    labels.push(i);
+    // TODO: parse players
+
+    if (snapshot) {
+      const players: SnapshotPlayer[] = snapshot.players;
+      snapshots.push({ ...snapshot, players: players });
+    }
   }
 
-  // TODO: more data
-  // TODO: restructure PlayerDatasetType so the dataset is indexed by a string
-  const playerDatasets: PlayerDatasetType = {};
-  for (const snapshot of Object.values(snapshots)) {
-    for (const player of players) {
-      if (!playerDatasets[player.alias]) {
-        playerDatasets[player.alias] = {
-          industryDataset: [],
-          id: Number(player.id),
-        };
+  const industryDataset: DatasetType = { data: [] };
+  const economyDataset: DatasetType = { data: [] };
+  const scienceDataset: DatasetType = { data: [] };
+  const starsDataset: DatasetType = { data: [] };
+  const shipsDataset: DatasetType = { data: [] };
+
+  for (const snapshot of snapshots) {
+    const industrySnapshotData: SnapshotDatasetType = { name: snapshot.tick };
+    const economySnapshotData: SnapshotDatasetType = { name: snapshot.tick };
+    const scienceSnapshotData: SnapshotDatasetType = { name: snapshot.tick };
+    const starsSnapshotData: SnapshotDatasetType = { name: snapshot.tick };
+    const shipsSnapshotData: SnapshotDatasetType = { name: snapshot.tick };
+    for (const player of Object.values(snapshot.players)) {
+      if (player.uid || player.uid === 0) {
+        industrySnapshotData[player.uid as number] =
+          snapshot.players[player.uid].total_industry;
+        economySnapshotData[player.uid as number] =
+          snapshot.players[player.uid].total_economy;
+        scienceSnapshotData[player.uid as number] =
+          snapshot.players[player.uid].total_science;
+        starsSnapshotData[player.uid as number] =
+          snapshot.players[player.uid].total_stars;
+        shipsSnapshotData[player.uid as number] =
+          snapshot.players[player.uid].total_strength;
       }
-
-      const totalIndustry =
-        snapshot && snapshot.players[player.id]
-          ? snapshot.players[player.id].total_industry
-          : 0;
-      playerDatasets[player.alias].industryDataset.push(totalIndustry);
     }
+    industryDataset.data.push(industrySnapshotData);
+    economyDataset.data.push(economySnapshotData);
+    scienceDataset.data.push(scienceSnapshotData);
+    starsDataset.data.push(starsSnapshotData);
+    shipsDataset.data.push(shipsSnapshotData);
   }
 
-  return { playerDatasets, labels };
-}
-
-export async function getPlayerDatasets({
-  startTick,
-  endTick,
-  tickInterval,
-}: {
-  startTick: number;
-  endTick: number;
-  tickInterval: number;
-}) {
-  const playerDatasets = cache(
-    async (startTick: number, endTick: number, tickInterval: number) => {
-      const item = await buildPlayerDatasets({
-        startTick,
-        endTick,
-        tickInterval,
-      });
-      return item;
-    }
-  );
-
-  return playerDatasets(startTick, endTick, tickInterval);
-}
-
-export async function getIndustryDataset({
-  startTick,
-  endTick,
-  tickInterval,
-}: {
-  startTick: number;
-  endTick: number;
-  tickInterval: number;
-}) {
-  const { playerDatasets, labels } = await getPlayerDatasets({
-    startTick,
-    endTick,
-    tickInterval,
-  });
-
-  let datasets = [];
-  for (const playerName of Object.keys(playerDatasets)) {
-    const playerData = playerDatasets[playerName];
-    datasets.push({
-      label: playerName,
-      data: playerData.industryDataset,
-      borderColor: PLAYER_COLORS_RBG[playerData.id],
-      backgroundColor: PLAYER_COLORS_RBG[playerData.id],
-    });
-  }
-
-  return { labels, datasets };
+  return {
+    industry: industryDataset,
+    economy: economyDataset,
+    science: scienceDataset,
+    stars: starsDataset,
+    ships: shipsDataset,
+  };
 }

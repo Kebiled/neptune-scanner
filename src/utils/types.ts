@@ -92,6 +92,38 @@ export type Player = {
   war?: Record<string, unknown> | null;
 };
 
+export type SnapshotPlayer = {
+  uid: number;
+  ai?: number | null;
+  alias?: string | null;
+  avatar?: number | null;
+  cash?: number | null;
+  color?: number | null;
+  conceded?: number | null;
+  countdown_to_war?: Record<string, number> | null | undefined;
+  fleet_price?: number | null;
+  huid?: number | null;
+  karma_to_give?: number | null;
+  ledger?: Record<string, number> | null;
+  missed_turns?: number | null;
+  race?: [number | null, number | null] | null;
+  ready?: number | null;
+  regard?: number | null;
+  researching?: string | null;
+  researching_next?: string | null;
+  stars_abandoned?: number | null;
+  ses?: number | null;
+  shape?: number | null;
+  tech?: TechLevels | null;
+  total_economy?: number | null;
+  total_fleets?: number | null;
+  total_industry?: number | null;
+  total_science?: number | null;
+  total_stars?: number | null;
+  total_strength?: number | null;
+  war?: Record<string, unknown> | null;
+};
+
 export type Star = {
   gameId: string;
   starId: number;

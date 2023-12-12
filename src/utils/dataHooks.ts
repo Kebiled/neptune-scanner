@@ -2,6 +2,7 @@
 
 import useSWR from "swr";
 import { CycleComparison, Fleet, FleetArrivalData, Player } from "./types";
+import { DatasetsType } from "./datasets";
 
 const fetcherWithHeaders = async ([url, headers]: [string, any]) => {
   const response = await fetch(url, headers);
@@ -69,6 +70,34 @@ export function useLastCycleComparison(gameNumber: string, apiKey: string) {
 
   return {
     cycleComparison: (data as CycleComparison) ?? [],
+    isLoading,
+    isError: error,
+  };
+}
+
+export function useDataSets(
+  gameNumber: string,
+  apiKey: string,
+  startTick: number,
+  endTick: number,
+  tickInterval: number
+) {
+  const headers = {
+    headers: {
+      gameNumber: gameNumber,
+      apiKey: apiKey,
+      startTick: String(startTick),
+      endTick: String(endTick),
+      tickInterval: String(tickInterval),
+    },
+  };
+  const { data, error, isLoading } = useSWR(
+    [`/api/datasets`, headers],
+    fetcherWithHeaders
+  );
+
+  return {
+    datasets: (data as DatasetsType) ?? {},
     isLoading,
     isError: error,
   };
