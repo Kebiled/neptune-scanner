@@ -4,7 +4,7 @@ import prisma from "../../../../lib/prisma";
 import { playerTickComparison } from "@/utils/tickComparison";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 10;
+export const maxDuration = 300;
 
 export async function GET(request: Request) {
   const headersList = headers();

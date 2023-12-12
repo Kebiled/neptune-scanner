@@ -5,7 +5,7 @@ import { getFleetData, processDBOrder } from "@/utils/fleetOrders";
 import { getPlayerFleets } from "@/utils/prismaUtil";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 10;
+export const maxDuration = 300;
 
 export async function GET(request: Request) {
   const headersList = headers();

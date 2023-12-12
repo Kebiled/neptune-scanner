@@ -18,3 +18,13 @@ export const PLAYER_COLORS_RBG = [
   "rgb(220, 38, 38)",
   "rgb(217, 70, 239)",
 ];
+
+export const PLAYER_COLORS_HEX = [
+  "#1d4ed8",
+  "#22d3ee",
+  "#22c55e",
+  "#eab308",
+  "#f97316",
+  "#dc2626",
+  "#d946ef",
+];

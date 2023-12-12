@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import prisma from "../../../../lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 10;
+export const maxDuration = 300;
 
 export async function GET(request: Request) {
   const headersList = headers();
